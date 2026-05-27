@@ -1,0 +1,1386 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cowgame Didático</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17211b;
+      --muted: #62706a;
+      --line: #d8ded6;
+      --panel: #ffffff;
+      --soft: #f4f7f1;
+      --brand: #1f6f55;
+      --brand-2: #b34b35;
+      --gold: #b28322;
+      --blue: #315c91;
+      --bad: #a83232;
+      --good: #23704d;
+      --shadow: 0 12px 30px rgba(23, 33, 27, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, #eef4ec 0, #f8faf6 320px, #f8faf6 100%);
+    }
+
+    header {
+      min-height: 210px;
+      padding: 28px clamp(16px, 4vw, 54px) 18px;
+      background:
+        linear-gradient(90deg, rgba(23, 33, 27, .88), rgba(23, 33, 27, .56)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='360' viewBox='0 0 1200 360'%3E%3Crect width='1200' height='360' fill='%237fa06f'/%3E%3Cpath d='M0 260 C180 210 260 270 430 230 C610 190 720 245 890 210 C1030 182 1110 220 1200 190 L1200 360 L0 360 Z' fill='%233f704e'/%3E%3Cpath d='M0 300 C220 250 350 330 560 285 C720 250 880 300 1200 240 L1200 360 L0 360 Z' fill='%232b573c'/%3E%3Cg fill='%23f2efe4' opacity='.95'%3E%3Cellipse cx='210' cy='238' rx='54' ry='26'/%3E%3Ccircle cx='258' cy='226' r='18'/%3E%3Crect x='178' y='258' width='10' height='42'/%3E%3Crect x='226' y='258' width='10' height='42'/%3E%3Cellipse cx='820' cy='220' rx='66' ry='31'/%3E%3Ccircle cx='880' cy='207' r='20'/%3E%3Crect x='780' y='247' width='11' height='48'/%3E%3Crect x='842' y='247' width='11' height='48'/%3E%3C/g%3E%3Cg fill='%2321271e' opacity='.75'%3E%3Cellipse cx='195' cy='232' rx='14' ry='9'/%3E%3Cellipse cx='230' cy='245' rx='16' ry='10'/%3E%3Cellipse cx='800' cy='213' rx='17' ry='11'/%3E%3Cellipse cx='844' cy='230' rx='18' ry='11'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: cover;
+      background-position: center;
+      color: white;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 58px);
+      letter-spacing: 0;
+      line-height: 1;
+    }
+
+    header p {
+      max-width: 820px;
+      margin: 14px 0 0;
+      font-size: 17px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, .88);
+    }
+
+    main {
+      width: min(1380px, calc(100% - 28px));
+      margin: -34px auto 40px;
+    }
+
+    .toolbar, .panel, .modal {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: 8px;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      padding: 12px;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .tabs, .actions, .metric-grid, .pair-grid {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button, select, input {
+      font: inherit;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: #9fb1a8; }
+    button.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+    button.warn { background: var(--brand-2); border-color: var(--brand-2); color: #fff; }
+    button.active { background: #dfece5; border-color: #9dc5b5; color: #174934; }
+    button:disabled { opacity: .48; cursor: not-allowed; }
+
+    select, input {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--ink);
+      padding: 0 10px;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 14px;
+      margin-top: 14px;
+      align-items: start;
+    }
+
+    aside {
+      display: grid;
+      gap: 12px;
+    }
+
+    .panel {
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    h2, h3 {
+      margin: 0 0 10px;
+      letter-spacing: 0;
+      line-height: 1.15;
+    }
+
+    h2 { font-size: 23px; }
+    h3 { font-size: 16px; }
+    p { color: var(--muted); line-height: 1.45; }
+
+    .metrics {
+      display: grid;
+      gap: 8px;
+    }
+
+    .metric {
+      background: var(--soft);
+      border: 1px solid #e3e8df;
+      border-radius: 8px;
+      padding: 10px;
+      min-width: 125px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1.1;
+    }
+
+    .metric span, .hint, .tag {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 14px;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      max-height: 620px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 8px 9px;
+      border-bottom: 1px solid #edf0eb;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    th {
+      text-align: right;
+      position: sticky;
+      top: 0;
+      background: #f7faf5;
+      z-index: 1;
+      color: #34463d;
+      font-size: 12px;
+    }
+
+    th:first-child, td:first-child,
+    th:nth-child(2), td:nth-child(2),
+    th:nth-child(3), td:nth-child(3) {
+      text-align: left;
+    }
+
+    tr.selected { background: #e8f4ee; }
+    #herdTable tbody tr { cursor: pointer; }
+    tr.market { background: #fff8e8; }
+    tr.dead { color: #8d8d8d; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 22px;
+      padding: 0 7px;
+      border-radius: 999px;
+      background: #eef2ee;
+      border: 1px solid #dde5dc;
+    }
+
+    .tag.good { color: var(--good); background: #e8f4ee; border-color: #c8e1d5; }
+    .tag.bad { color: var(--bad); background: #faeaea; border-color: #e9caca; }
+    .tag.gold { color: #6b4c0d; background: #fff5d8; border-color: #ead18a; }
+
+    .log {
+      display: grid;
+      gap: 8px;
+      max-height: 410px;
+      overflow: auto;
+    }
+
+    .log article {
+      border-left: 3px solid var(--brand);
+      background: #f8faf6;
+      padding: 9px 10px;
+      border-radius: 0 8px 8px 0;
+      color: #3b473f;
+      line-height: 1.35;
+      font-size: 13px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .pair-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+      max-height: 380px;
+      overflow: auto;
+    }
+
+    .pair {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px;
+      background: #fff;
+    }
+
+    .bar {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: #e5e9e3;
+      overflow: hidden;
+      margin-top: 7px;
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--brand);
+    }
+
+    canvas {
+      width: 100%;
+      height: 250px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+
+    .notes {
+      display: grid;
+      gap: 9px;
+    }
+
+    .notes div {
+      background: #f8faf6;
+      border: 1px solid #e5ebe3;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 13px;
+      color: #3f4b43;
+      line-height: 1.38;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(23, 33, 27, .42);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      padding: 18px;
+    }
+
+    .overlay.active { display: flex; }
+    .modal {
+      width: min(760px, 100%);
+      max-height: calc(100vh - 38px);
+      overflow: auto;
+      padding: 18px;
+    }
+
+    .sources li { margin-bottom: 8px; color: var(--muted); line-height: 1.4; }
+    .sources a { color: var(--blue); }
+
+    @media (max-width: 980px) {
+      .content, .split { grid-template-columns: 1fr; }
+      .toolbar { grid-template-columns: 1fr; position: static; }
+      aside { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      main { width: calc(100% - 16px); }
+      aside { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .metric-grid { align-items: stretch; }
+      .metric { min-width: calc(50% - 4px); }
+      header { min-height: 230px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Cowgame Didático</h1>
+    <p>Simulador de melhoramento de bovinos de corte inspirado no Cowgame: seleção, acasalamento, EPDs, acurácias, gene recessivo letal, mercado, consanguinidade e relatórios de progresso.</p>
+  </header>
+
+  <main>
+    <section class="toolbar" aria-label="Navegação principal">
+      <div class="tabs">
+        <button class="active" data-view="dashboard">Painel</button>
+        <button data-view="herd">Rebanho</button>
+        <button data-view="mating">Acasalamentos</button>
+        <button data-view="market">Mercado</button>
+        <button data-view="reports">Relatórios</button>
+        <button data-view="teacher">Professor</button>
+      </div>
+      <div class="actions">
+        <button id="helpBtn">Fontes</button>
+        <button id="exportJsonBtn">Exportar JSON</button>
+        <button id="exportCsvBtn">Exportar CSV</button>
+        <button id="resetBtn" class="warn">Reiniciar</button>
+      </div>
+    </section>
+
+    <section class="content">
+      <aside>
+        <div class="panel">
+          <h3>Projeto</h3>
+          <div class="metrics">
+            <div class="metric"><strong id="yearMetric">0/10</strong><span>Ano do projeto</span></div>
+            <div class="metric"><strong id="cashMetric">$0</strong><span>Caixa</span></div>
+            <div class="metric"><strong id="scoreMetric">0</strong><span>Pontuação parcial</span></div>
+            <div class="metric"><strong id="herdMetric">0</strong><span>Animais ativos</span></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Metas de ensino</h3>
+          <div class="notes">
+            <div>Aumentar EPD de peso ao ano sem explodir peso ao nascer.</div>
+            <div>Reduzir a frequência do alelo letal recessivo.</div>
+            <div>Controlar consanguinidade média abaixo de 6,25%.</div>
+            <div>Manter caixa positivo após vendas e compras.</div>
+          </div>
+        </div>
+      </aside>
+
+      <section>
+        <div id="dashboard" class="view active">
+          <div class="split">
+            <div class="panel">
+              <h2>Situação do Rebanho</h2>
+              <div class="metric-grid" id="traitMetrics"></div>
+              <canvas id="trendCanvas" width="900" height="300" aria-label="Tendência genética"></canvas>
+            </div>
+            <div class="panel">
+              <h2>Feedback Didático</h2>
+              <div class="log" id="feedbackLog"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="herd" class="view">
+          <div class="panel">
+            <div class="actions" style="justify-content: space-between; margin-bottom: 10px;">
+              <h2>Rebanho</h2>
+              <div class="actions">
+                <select id="traitSort" aria-label="Ordenar por característica">
+                  <option value="yw">EPD peso ao ano</option>
+                  <option value="ww">EPD desmama</option>
+                  <option value="bw">EPD nascimento</option>
+                  <option value="marb">EPD marmoreio</option>
+                  <option value="index">Índice econômico</option>
+                </select>
+                <button id="autoSelectBtn">Selecionar candidatos</button>
+                <button id="clearSelectionBtn">Limpar seleção</button>
+                <button id="sellSelectedBtn">Vender selecionados</button>
+              </div>
+            </div>
+            <div class="notes" style="margin-bottom: 10px;">
+              <div id="selectionSummary">Nenhum animal selecionado.</div>
+            </div>
+            <div class="table-wrap">
+              <table id="herdTable"></table>
+            </div>
+          </div>
+        </div>
+
+        <div id="mating" class="view">
+          <div class="split">
+            <div class="panel">
+              <h2>Acasalamento Dirigido</h2>
+              <p>Use os animais marcados no Rebanho para montar os pares por estratégia, ou adicione pares individuais quando quiser testar uma combinação específica.</p>
+              <div class="notes" style="margin-bottom: 10px;">
+                <div id="matingSelectionSummary">Nenhum animal selecionado para reprodução.</div>
+              </div>
+              <div class="form-row">
+                <select id="matingTrait" aria-label="Critério de acasalamento">
+                  <option value="index">Índice econômico</option>
+                  <option value="yw">EPD peso ao ano</option>
+                  <option value="ww">EPD desmama</option>
+                  <option value="bw">EPD nascimento</option>
+                  <option value="marb">EPD marmoreio</option>
+                </select>
+                <select id="matingStrategy" aria-label="Estratégia de acasalamento">
+                  <option value="random">Aleatório</option>
+                  <option value="assortative">Assortativo: melhores com melhores</option>
+                  <option value="disassortative">Disassortativo: melhores com piores</option>
+                </select>
+                <button id="generateStrategyPairsBtn" class="primary">Gerar pares</button>
+              </div>
+              <div class="actions" style="margin-bottom: 14px;">
+                <button id="clearPairsBtn">Limpar pares</button>
+                <button id="clearSelectionFromMatingBtn">Limpar seleção</button>
+              </div>
+              <h3>Par individual</h3>
+              <div class="form-row">
+                <select id="sireSelect" aria-label="Selecionar touro"></select>
+                <select id="damSelect" aria-label="Selecionar vaca"></select>
+                <button id="addPairBtn" class="primary">Adicionar</button>
+              </div>
+              <div class="actions" style="margin-bottom: 10px;">
+                <button id="buildPairsBtn">Montar pares dos selecionados</button>
+                <button id="sireToSelectedBtn">Touro atual nas vacas selecionadas</button>
+              </div>
+              <div id="matingPreview" class="notes"></div>
+              <div class="pair-list" id="pairList"></div>
+              <div class="actions" style="margin-top: 12px;">
+                <button id="simulateBtn" class="primary">Gerar próxima safra</button>
+              </div>
+            </div>
+            <div class="panel">
+              <h2>Sumário de Touros</h2>
+              <div class="table-wrap">
+                <table id="sireSummary"></table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="market" class="view">
+          <div class="panel">
+            <h2>Mercado de Touros</h2>
+            <p>Touros externos elevam a média genética e reduzem endogamia, mas custam caixa.</p>
+            <div class="table-wrap">
+              <table id="marketTable"></table>
+            </div>
+          </div>
+        </div>
+
+        <div id="reports" class="view">
+          <div class="split">
+            <div class="panel">
+              <h2>Progresso por Característica</h2>
+              <canvas id="multiCanvas" width="900" height="300"></canvas>
+            </div>
+            <div class="panel">
+              <h2>Consanguinidade e Eventos</h2>
+              <canvas id="inbreedingCanvas" width="900" height="300"></canvas>
+              <div class="log" id="eventLog" style="margin-top: 12px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="teacher" class="view">
+          <div class="panel">
+            <div class="actions" style="justify-content: space-between; margin-bottom: 10px;">
+              <h2>Modo Professor</h2>
+              <button id="toggleTruthBtn" class="primary">Revelar valores genéticos</button>
+            </div>
+            <p>Esta área mostra os valores genéticos verdadeiros e a frequência real do alelo letal. No Cowgame original, esse acesso era restrito ao administrador/professor.</p>
+            <div class="metric-grid" id="truthMetrics"></div>
+            <div class="table-wrap">
+              <table id="truthTable"></table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="sourceModal" class="overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="actions" style="justify-content: space-between;">
+        <h2>Base Documental</h2>
+        <button id="closeHelpBtn">Fechar</button>
+      </div>
+      <p>O app separa o núcleo historicamente documentado de extensões didáticas modernas. A avaliação MTDFREML real ainda deve ser implementada em um backend estatístico; aqui ela é aproximada para fins de aprendizado.</p>
+      <ul class="sources">
+        <li>Kleibrink, K. M. (1997). <a href="https://oaktrust.library.tamu.edu/items/2bc360d1-7cd1-476f-8699-fa4b6d9ebc97" target="_blank" rel="noreferrer">Cowgame: animal breeding simulation software</a>.</li>
+        <li>USDA/NIFA. <a href="https://portal.nifa.usda.gov/web/crisprojectpages/1015476-cowgame-a-beef-cattle-breeding-simulation-for-todays-classroom.html" target="_blank" rel="noreferrer">Cowgame: A Beef Cattle Breeding Simulation for Today's Classroom</a>.</li>
+        <li>ASAS 2018. <a href="https://asas.confex.com/asas/mw18/webprogram/Paper23151.html" target="_blank" rel="noreferrer">Cowgames: Developing and Implementing an Online Cattle Breeding Simulation</a>.</li>
+        <li>NACTA Journal. <a href="https://nactaarchives.org/index.php/vol-33-num-2-jun-1989/1009-using-a-computer-simulation-program-for-animal-breeding-instruction" target="_blank" rel="noreferrer">Using a Computer Simulation Program for Animal Breeding Instruction</a>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const traits = {
+      bw: { label: "PN", full: "Peso ao nascer", base: 36, sdG: 2.6, sdE: 3.1, goal: "baixo" },
+      ww: { label: "PD", full: "Peso à desmama", base: 220, sdG: 15, sdE: 22, goal: "alto" },
+      yw: { label: "PA", full: "Peso ao ano", base: 360, sdG: 25, sdE: 30, goal: "alto" },
+      yhh: { label: "AA", full: "Altura de quadril", base: 122, sdG: 4.5, sdE: 4.2, goal: "medio" },
+      marb: { label: "MAR", full: "Marmoreio", base: 4.5, sdG: .55, sdE: .7, goal: "alto" }
+    };
+    const traitKeys = Object.keys(traits);
+    const geneticCorr = [
+      [1, .42, .45, .22, -.08],
+      [.42, 1, .72, .36, .10],
+      [.45, .72, 1, .48, .18],
+      [.22, .36, .48, 1, .05],
+      [-.08, .10, .18, .05, 1]
+    ];
+    const envCorr = [
+      [1, .18, .20, .05, 0],
+      [.18, 1, .45, .20, .04],
+      [.20, .45, 1, .28, .06],
+      [.05, .20, .28, 1, 0],
+      [0, .04, .06, 0, 1]
+    ];
+    const state = {
+      year: 0,
+      cash: 12000,
+      nextId: 1,
+      animals: [],
+      selected: new Set(),
+      pairs: [],
+      events: [],
+      feedback: [],
+      history: [],
+      revealTruth: false,
+      market: []
+    };
+
+    function randn() {
+      let u = 0, v = 0;
+      while (!u) u = Math.random();
+      while (!v) v = Math.random();
+      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    }
+
+    function cholesky(m) {
+      const n = m.length, l = Array.from({ length: n }, () => Array(n).fill(0));
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j <= i; j++) {
+          let sum = 0;
+          for (let k = 0; k < j; k++) sum += l[i][k] * l[j][k];
+          l[i][j] = i === j ? Math.sqrt(Math.max(m[i][i] - sum, 0.0001)) : (m[i][j] - sum) / l[j][j];
+        }
+      }
+      return l;
+    }
+
+    const cholG = cholesky(geneticCorr);
+    const cholE = cholesky(envCorr);
+
+    function correlatedVector(chol, scaleKey) {
+      const z = traitKeys.map(randn);
+      return traitKeys.reduce((acc, key, i) => {
+        let value = 0;
+        for (let j = 0; j <= i; j++) value += chol[i][j] * z[j];
+        acc[key] = value * traits[key][scaleKey];
+        return acc;
+      }, {});
+    }
+
+    function makeAnimal({ sex, sire = null, dam = null, gen = 0, market = false, boost = 0 }) {
+      const founder = !sire && !dam;
+      const bv = {};
+      if (founder || market) {
+        const g = correlatedVector(cholG, "sdG");
+        traitKeys.forEach(k => bv[k] = g[k] + (k === "bw" ? boost * .14 : boost));
+      } else {
+        traitKeys.forEach(k => {
+          const mendelian = randn() * traits[k].sdG * .45;
+          bv[k] = ((sire.bv[k] + dam.bv[k]) / 2) + mendelian;
+        });
+      }
+      const env = correlatedVector(cholE, "sdE");
+      const pheno = {};
+      traitKeys.forEach(k => pheno[k] = traits[k].base + bv[k] + env[k]);
+      if (!founder && dam) {
+        pheno.ww += dam.bv.ww * .12;
+      }
+
+      let lethal = founder || market ? randomGenotype(market ? .03 : .12) : inheritLethal(sire, dam);
+      const dead = lethal === "aa";
+      const f = founder || market ? 0 : relationship(sire, dam) / 2;
+      if (f > 0.0625 && !dead) {
+        pheno.ww -= 20 * f;
+        pheno.yw -= 28 * f;
+        pheno.marb -= .18 * f;
+      }
+
+      const animal = {
+        id: `${sex === "M" ? "T" : "V"}${String(state.nextId++).padStart(3, "0")}`,
+        sex, sireId: sire?.id || "-", damId: dam?.id || "-", gen, age: 0,
+        active: !dead, dead, market, lethal, f,
+        bv, pheno, epd: {}, acc: {}, calves: 0, selected: false
+      };
+      updateEvaluation(animal);
+      return animal;
+    }
+
+    function randomGenotype(q) {
+      const a1 = Math.random() < q ? "a" : "A";
+      const a2 = Math.random() < q ? "a" : "A";
+      return [a1, a2].sort().join("");
+    }
+
+    function inheritLethal(sire, dam) {
+      const pick = g => g[Math.floor(Math.random() * 2)];
+      return [pick(sire.lethal), pick(dam.lethal)].sort().join("");
+    }
+
+    function updateEvaluation(animal) {
+      const ownWeight = Math.min(.62, .26 + animal.age * .035);
+      const progenyWeight = Math.min(.28, animal.calves * .012);
+      traitKeys.forEach(k => {
+        const phenotypeSignal = animal.pheno[k] - traits[k].base;
+        const progenyBoost = animal.calves ? animal.bv[k] * .2 : 0;
+        animal.epd[k] = (phenotypeSignal * ownWeight + animal.bv[k] * .25 + progenyBoost) / 2;
+        animal.acc[k] = Math.min(.96, .22 + animal.age * .045 + animal.calves * .018 + (animal.market ? .18 : 0));
+      });
+      animal.index = animal.epd.yw * 3.1 + animal.epd.ww * 1.4 + animal.epd.marb * 85 - animal.epd.bw * 5.5 - animal.f * 120;
+    }
+
+    function relationship(a, b) {
+      if (!a || !b) return 0;
+      if (a.id === b.id) return 1;
+      if (a.sireId === b.id || a.damId === b.id || b.sireId === a.id || b.damId === a.id) return .5;
+      const aParents = [a.sireId, a.damId].filter(x => x !== "-");
+      const bParents = [b.sireId, b.damId].filter(x => x !== "-");
+      const commonParents = aParents.filter(x => bParents.includes(x)).length;
+      if (commonParents === 2) return .5;
+      if (commonParents === 1) return .25;
+      const aGrand = ancestors(a, 2);
+      const bGrand = ancestors(b, 2);
+      const common = [...aGrand].filter(x => bGrand.has(x)).length;
+      return Math.min(.125 * common, .25);
+    }
+
+    function ancestors(animal, depth) {
+      const found = new Set();
+      let frontier = [animal];
+      for (let d = 0; d < depth; d++) {
+        frontier = frontier.flatMap(x => [findAnimal(x.sireId), findAnimal(x.damId)].filter(Boolean));
+        frontier.forEach(x => found.add(x.id));
+      }
+      return found;
+    }
+
+    function findAnimal(id) {
+      return state.animals.find(a => a.id === id);
+    }
+
+    function activeAnimals() {
+      return state.animals.filter(a => a.active && !a.dead);
+    }
+
+    function activeBySex(sex) {
+      return activeAnimals().filter(a => a.sex === sex);
+    }
+
+    function initialize() {
+      state.year = 0;
+      state.cash = 12000;
+      state.nextId = 1;
+      state.animals = [];
+      state.selected = new Set();
+      state.pairs = [];
+      state.events = [];
+      state.feedback = [];
+      state.history = [];
+      state.revealTruth = false;
+      for (let i = 0; i < 5; i++) state.animals.push(makeAnimal({ sex: "M", gen: 0 }));
+      for (let i = 0; i < 50; i++) state.animals.push(makeAnimal({ sex: "F", gen: 0 }));
+      state.market = Array.from({ length: 5 }, (_, i) => makeAnimal({ sex: "M", gen: 0, market: true, boost: 8 + i * 4 }));
+      addFeedback("Rebanho fundador criado com 5 touros e 50 vacas, sem parentesco conhecido entre fundadores.");
+      addFeedback("EPDs e acurácias são aproximações didáticas. Para fidelidade estatística completa, substitua este módulo por MTDFREML/BLUP multivariado em backend.");
+      recordHistory();
+      render();
+    }
+
+    function addFeedback(text) {
+      state.feedback.unshift({ year: state.year, text });
+      state.feedback = state.feedback.slice(0, 12);
+    }
+
+    function addEvent(text) {
+      state.events.unshift({ year: state.year, text });
+      state.events = state.events.slice(0, 18);
+    }
+
+    function recordHistory() {
+      const herd = activeAnimals();
+      const avg = {};
+      traitKeys.forEach(k => avg[k] = mean(herd.map(a => a.bv[k])));
+      state.history.push({
+        year: state.year,
+        avg,
+        epdYw: mean(herd.map(a => a.epd.yw)),
+        f: mean(herd.map(a => a.f || 0)),
+        lethalQ: lethalFrequency(herd)
+      });
+    }
+
+    function mean(values) {
+      const valid = values.filter(Number.isFinite);
+      return valid.length ? valid.reduce((a, b) => a + b, 0) / valid.length : 0;
+    }
+
+    function lethalFrequency(herd = activeAnimals()) {
+      const alleles = herd.flatMap(a => a.lethal.split(""));
+      return alleles.filter(x => x === "a").length / Math.max(1, alleles.length);
+    }
+
+    function money(v) {
+      return `$${Math.round(v).toLocaleString("pt-BR")}`;
+    }
+
+    function fmt(v, d = 1) {
+      return Number.isFinite(v) ? v.toFixed(d).replace(".", ",") : "-";
+    }
+
+    function exportPayload() {
+      const herd = activeAnimals();
+      return {
+        app: "Cowgame Didático",
+        exportedAt: new Date().toISOString(),
+        year: state.year,
+        cash: state.cash,
+        score: score(),
+        summary: {
+          activeAnimals: herd.length,
+          activeSires: activeBySex("M").length,
+          activeDams: activeBySex("F").length,
+          averageInbreeding: mean(herd.map(a => a.f || 0)),
+          lethalAlleleFrequency: lethalFrequency(herd),
+          averageEpd: traitKeys.reduce((acc, k) => {
+            acc[k] = mean(herd.map(a => a.epd[k]));
+            return acc;
+          }, {}),
+          averageTrueBreedingValue: traitKeys.reduce((acc, k) => {
+            acc[k] = mean(herd.map(a => a.bv[k]));
+            return acc;
+          }, {})
+        },
+        history: state.history,
+        events: state.events,
+        feedback: state.feedback,
+        activeAnimals: herd.map(exportAnimal),
+        allAnimals: state.animals.map(exportAnimal),
+        pendingPairs: state.pairs
+      };
+    }
+
+    function exportAnimal(a) {
+      return {
+        id: a.id,
+        sex: a.sex,
+        sireId: a.sireId,
+        damId: a.damId,
+        generation: a.gen,
+        age: a.age,
+        active: a.active,
+        dead: a.dead,
+        calves: a.calves,
+        inbreeding: a.f,
+        lethalGenotype: a.lethal,
+        index: a.index,
+        phenotype: a.pheno,
+        epd: a.epd,
+        accuracy: a.acc,
+        trueBreedingValue: a.bv
+      };
+    }
+
+    function downloadText(filename, text, type) {
+      const blob = new Blob([text], { type });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportJson() {
+      const filename = `cowgame-resultados-ano-${state.year}.json`;
+      downloadText(filename, JSON.stringify(exportPayload(), null, 2), "application/json;charset=utf-8");
+      addFeedback(`Arquivo ${filename} exportado com rebanho, histórico, eventos, EPDs e valores genéticos verdadeiros.`);
+      render();
+    }
+
+    function csvEscape(value) {
+      if (value === null || value === undefined) return "";
+      const text = String(value).replace(/"/g, '""');
+      return /[",\n\r;]/.test(text) ? `"${text}"` : text;
+    }
+
+    function toCsv(rows) {
+      if (!rows.length) return "";
+      const headers = Object.keys(rows[0]);
+      return [
+        headers.join(";"),
+        ...rows.map(row => headers.map(h => csvEscape(row[h])).join(";"))
+      ].join("\n");
+    }
+
+    function exportCsv() {
+      const rows = activeAnimals().map(a => ({
+        id: a.id,
+        sexo: a.sex === "M" ? "touro" : "vaca",
+        pai: a.sireId,
+        mae: a.damId,
+        geracao: a.gen,
+        idade: a.age,
+        ativo: a.active,
+        filhos: a.calves,
+        f_consanguinidade: a.f,
+        gene_letal: a.lethal,
+        indice: a.index,
+        fenotipo_pn: a.pheno.bw,
+        fenotipo_pd: a.pheno.ww,
+        fenotipo_pa: a.pheno.yw,
+        fenotipo_aa: a.pheno.yhh,
+        fenotipo_marmoreio: a.pheno.marb,
+        epd_pn: a.epd.bw,
+        epd_pd: a.epd.ww,
+        epd_pa: a.epd.yw,
+        epd_aa: a.epd.yhh,
+        epd_marmoreio: a.epd.marb,
+        acc_pn: a.acc.bw,
+        acc_pd: a.acc.ww,
+        acc_pa: a.acc.yw,
+        acc_aa: a.acc.yhh,
+        acc_marmoreio: a.acc.marb,
+        vg_real_pn: a.bv.bw,
+        vg_real_pd: a.bv.ww,
+        vg_real_pa: a.bv.yw,
+        vg_real_aa: a.bv.yhh,
+        vg_real_marmoreio: a.bv.marb
+      }));
+      const filename = `cowgame-rebanho-ano-${state.year}.csv`;
+      downloadText(filename, toCsv(rows), "text/csv;charset=utf-8");
+      addFeedback(`Arquivo ${filename} exportado com os animais ativos em formato CSV.`);
+      render();
+    }
+
+    function render() {
+      activeAnimals().forEach(updateEvaluation);
+      renderShell();
+      renderDashboard();
+      renderHerd();
+      renderMating();
+      renderMarket();
+      renderReports();
+      renderTeacher();
+    }
+
+    function renderShell() {
+      document.getElementById("yearMetric").textContent = `${state.year}/10`;
+      document.getElementById("cashMetric").textContent = money(state.cash);
+      document.getElementById("scoreMetric").textContent = Math.round(score());
+      document.getElementById("herdMetric").textContent = activeAnimals().length;
+      renderSelectionSummaries();
+    }
+
+    function renderSelectionSummaries() {
+      const sires = selectedBySex("M");
+      const dams = selectedBySex("F");
+      const text = `${sires.length} touro(s) e ${dams.length} vaca(s) selecionados para reprodução.`;
+      const herdSummary = document.getElementById("selectionSummary");
+      const matingSummary = document.getElementById("matingSelectionSummary");
+      if (herdSummary) herdSummary.textContent = state.selected.size ? `${text} Clique em uma caixa marcada para desselecionar, ou use Limpar seleção.` : "Nenhum animal selecionado.";
+      if (matingSummary) matingSummary.textContent = state.selected.size ? text : "Nenhum animal selecionado para reprodução. Volte ao Rebanho e marque machos e fêmeas, ou use Selecionar candidatos.";
+    }
+
+    function score() {
+      const last = state.history.at(-1);
+      if (!last) return 0;
+      const genetic = last.avg.yw * 4 + last.avg.ww * 1.5 + last.avg.marb * 70 - Math.max(0, last.avg.bw) * 3;
+      const finance = state.cash / 600;
+      const health = Math.max(0, 80 - last.f * 700 - last.lethalQ * 160);
+      return genetic + finance + health + state.year * 6;
+    }
+
+    function renderDashboard() {
+      const herd = activeAnimals();
+      const traitMetrics = document.getElementById("traitMetrics");
+      traitMetrics.innerHTML = traitKeys.map(k => `
+        <div class="metric">
+          <strong>${fmt(mean(herd.map(a => a.epd[k])), k === "marb" ? 2 : 1)}</strong>
+          <span>EPD média ${traits[k].label}</span>
+        </div>
+      `).join("") + `
+        <div class="metric"><strong>${fmt(mean(herd.map(a => a.f)) * 100, 2)}%</strong><span>F médio</span></div>
+        <div class="metric"><strong>${fmt(lethalFrequency(herd) * 100, 1)}%</strong><span>alelo letal</span></div>
+      `;
+      document.getElementById("feedbackLog").innerHTML = state.feedback.map(x => `<article><b>Ano ${x.year}</b><br>${x.text}</article>`).join("");
+      drawTrend("trendCanvas", [state.history.map(h => ({ x: h.year, y: h.epdYw }))], ["EPD PA"], ["#1f6f55"]);
+    }
+
+    function sortedHerd() {
+      const key = document.getElementById("traitSort")?.value || "yw";
+      return [...activeAnimals()].sort((a, b) => (key === "index" ? b.index - a.index : b.epd[key] - a.epd[key]));
+    }
+
+    function renderHerd() {
+      const rows = sortedHerd().map(a => `
+        <tr class="${state.selected.has(a.id) ? "selected" : ""}" data-id="${a.id}">
+          <td><input type="checkbox" ${state.selected.has(a.id) ? "checked" : ""} data-pick="${a.id}"></td>
+          <td>${a.id}</td><td>${a.sex === "M" ? "Touro" : "Vaca"}</td>
+          <td>${a.gen}</td><td>${a.age}</td>
+          <td>${fmt(a.pheno.bw)}</td><td>${fmt(a.pheno.ww)}</td><td>${fmt(a.pheno.yw)}</td><td>${fmt(a.pheno.yhh)}</td><td>${fmt(a.pheno.marb, 2)}</td>
+          <td>${fmt(a.epd.bw)}</td><td>${fmt(a.epd.ww)}</td><td>${fmt(a.epd.yw)}</td><td>${fmt(a.epd.marb, 2)}</td>
+          <td>${fmt(a.acc.yw * 100, 0)}%</td><td>${fmt(a.index, 0)}</td><td>${a.lethal === "AA" ? "limpo" : a.lethal === "Aa" ? "portador" : "letal"}</td>
+        </tr>
+      `).join("");
+      document.getElementById("herdTable").innerHTML = `
+        <thead><tr><th></th><th>ID</th><th>Sexo</th><th>Gen</th><th>Idade</th><th>PN</th><th>PD</th><th>PA</th><th>AA</th><th>MAR</th><th>EPD PN</th><th>EPD PD</th><th>EPD PA</th><th>EPD MAR</th><th>Acc PA</th><th>Índice</th><th>Gene</th></tr></thead>
+        <tbody>${rows}</tbody>`;
+      document.querySelectorAll("[data-pick]").forEach(cb => cb.addEventListener("change", e => {
+        e.target.checked ? state.selected.add(e.target.dataset.pick) : state.selected.delete(e.target.dataset.pick);
+        render();
+      }));
+      document.querySelectorAll("#herdTable tbody tr[data-id]").forEach(row => row.addEventListener("click", e => {
+        if (e.target.tagName === "INPUT" || e.target.tagName === "BUTTON") return;
+        const id = row.dataset.id;
+        state.selected.has(id) ? state.selected.delete(id) : state.selected.add(id);
+        render();
+      }));
+    }
+
+    function renderMating() {
+      const sires = activeBySex("M").sort((a, b) => b.index - a.index);
+      const dams = activeBySex("F").sort((a, b) => b.index - a.index);
+      document.getElementById("sireSelect").innerHTML = sires.map(a => `<option value="${a.id}">${a.id} | EPD PA ${fmt(a.epd.yw)} | Acc ${fmt(a.acc.yw * 100, 0)}%</option>`).join("");
+      document.getElementById("damSelect").innerHTML = dams.map(a => `<option value="${a.id}">${a.id} | EPD PA ${fmt(a.epd.yw)} | F ${fmt(a.f * 100, 1)}%</option>`).join("");
+      renderMatingPreview();
+      renderSelectionSummaries();
+      document.getElementById("pairList").innerHTML = state.pairs.map((p, i) => {
+        const sire = findAnimal(p.sireId), dam = findAnimal(p.damId);
+        const rel = relationship(sire, dam);
+        return `<div class="pair">
+          <div><b>${p.sireId} x ${p.damId}</b><br><span class="hint">Parentesco ${fmt(rel * 100, 2)}%; risco distocia ${fmt(dystociaRisk(sire, dam) * 100, 0)}%; risco aa ${fmt(lethalRisk(sire, dam) * 100, 1)}%</span></div>
+          <button data-remove-pair="${i}">Remover</button>
+        </div>`;
+      }).join("") || `<div class="notes"><div>Nenhum acasalamento indicado ainda. Use os menus para adicionar um par, ou selecione animais no Rebanho e use os botões acima.</div></div>`;
+      document.querySelectorAll("[data-remove-pair]").forEach(btn => btn.addEventListener("click", e => {
+        state.pairs.splice(Number(e.target.dataset.removePair), 1);
+        renderMating();
+      }));
+      renderSireSummary();
+    }
+
+    function renderMatingPreview() {
+      const sire = findAnimal(document.getElementById("sireSelect").value);
+      const dam = findAnimal(document.getElementById("damSelect").value);
+      if (!sire || !dam) return;
+      const rel = relationship(sire, dam);
+      const blocked = rel >= .5;
+      const risk = dystociaRisk(sire, dam);
+      document.getElementById("matingPreview").innerHTML = `
+        <div><b>Prévia:</b> parentesco ${fmt(rel * 100, 2)}%, F esperado ${fmt(rel * 50, 2)}%, distocia ${fmt(risk * 100, 0)}%, letal aa ${fmt(lethalRisk(sire, dam) * 100, 1)}%.</div>
+        <div>${blocked ? "<span class='tag bad'>Acasalamento bloqueado</span> Pai-filha, mãe-filho ou equivalentes não são aceitos." : "<span class='tag good'>Acasalamento permitido</span> Ainda assim, monitore consanguinidade e peso ao nascer."}</div>
+      `;
+    }
+
+    function renderSireSummary() {
+      const rows = state.animals.filter(a => a.sex === "M").sort((a, b) => b.epd.yw - a.epd.yw).map(a => `
+        <tr class="${a.active ? "" : "dead"}">
+          <td>${a.id}</td><td>${a.active ? "ativo" : "fora"}</td><td>${a.sireId}</td><td>${a.damId}</td><td>${a.calves}</td>
+          <td>${fmt(a.epd.bw)}</td><td>${fmt(a.epd.ww)}</td><td>${fmt(a.epd.yw)}</td><td>${fmt(a.epd.yhh)}</td><td>${fmt(a.epd.marb, 2)}</td><td>${fmt(a.acc.yw * 100, 0)}%</td><td>${fmt(a.index, 0)}</td>
+        </tr>
+      `).join("");
+      document.getElementById("sireSummary").innerHTML = `<thead><tr><th>ID</th><th>Status</th><th>Pai</th><th>Mãe</th><th>Filhos</th><th>EPD PN</th><th>EPD PD</th><th>EPD PA</th><th>EPD AA</th><th>EPD MAR</th><th>Acc PA</th><th>Índice</th></tr></thead><tbody>${rows}</tbody>`;
+    }
+
+    function renderMarket() {
+      const rows = state.market.map((a, i) => {
+        const price = marketPrice(a);
+        return `<tr class="market"><td>${a.id}</td><td>${fmt(a.epd.bw)}</td><td>${fmt(a.epd.ww)}</td><td>${fmt(a.epd.yw)}</td><td>${fmt(a.epd.marb, 2)}</td><td>${fmt(a.acc.yw * 100, 0)}%</td><td>${fmt(a.index, 0)}</td><td>${money(price)}</td><td><button data-buy="${i}" ${state.cash < price ? "disabled" : ""}>Comprar</button></td></tr>`;
+      }).join("");
+      document.getElementById("marketTable").innerHTML = `<thead><tr><th>Touro</th><th>EPD PN</th><th>EPD PD</th><th>EPD PA</th><th>EPD MAR</th><th>Acc PA</th><th>Índice</th><th>Preço</th><th></th></tr></thead><tbody>${rows}</tbody>`;
+      document.querySelectorAll("[data-buy]").forEach(btn => btn.addEventListener("click", e => buyBull(Number(e.target.dataset.buy))));
+    }
+
+    function renderReports() {
+      drawTrend("multiCanvas", traitKeys.map(k => state.history.map(h => ({ x: h.year, y: h.avg[k] }))), traitKeys.map(k => traits[k].label), ["#1f6f55", "#b34b35", "#315c91", "#b28322", "#6b5b95"]);
+      drawTrend("inbreedingCanvas", [
+        state.history.map(h => ({ x: h.year, y: h.f * 100 })),
+        state.history.map(h => ({ x: h.year, y: h.lethalQ * 100 }))
+      ], ["F médio (%)", "alelo a (%)"], ["#b34b35", "#315c91"]);
+      document.getElementById("eventLog").innerHTML = state.events.map(x => `<article><b>Ano ${x.year}</b><br>${x.text}</article>`).join("");
+    }
+
+    function renderTeacher() {
+      const herd = activeAnimals();
+      document.getElementById("truthMetrics").innerHTML = `
+        <div class="metric"><strong>${fmt(mean(herd.map(a => a.bv.yw)))}</strong><span>VG real PA</span></div>
+        <div class="metric"><strong>${fmt(mean(herd.map(a => a.bv.ww)))}</strong><span>VG real PD</span></div>
+        <div class="metric"><strong>${fmt(mean(herd.map(a => a.f)) * 100, 2)}%</strong><span>F real médio</span></div>
+        <div class="metric"><strong>${fmt(lethalFrequency(herd) * 100, 1)}%</strong><span>freq. alelo a</span></div>
+      `;
+      document.getElementById("toggleTruthBtn").textContent = state.revealTruth ? "Ocultar valores genéticos" : "Revelar valores genéticos";
+      if (!state.revealTruth) {
+        document.getElementById("truthTable").innerHTML = `<tbody><tr><td style="text-align:left; padding:18px;">Valores ocultos. Use o botão acima para simular acesso de professor/administrador.</td></tr></tbody>`;
+        return;
+      }
+      const rows = sortedHerd().map(a => `<tr><td>${a.id}</td><td>${a.sex}</td><td>${fmt(a.bv.bw)}</td><td>${fmt(a.bv.ww)}</td><td>${fmt(a.bv.yw)}</td><td>${fmt(a.bv.yhh)}</td><td>${fmt(a.bv.marb, 2)}</td><td>${fmt(a.f * 100, 2)}%</td><td>${a.lethal}</td></tr>`).join("");
+      document.getElementById("truthTable").innerHTML = `<thead><tr><th>ID</th><th>Sexo</th><th>VG PN</th><th>VG PD</th><th>VG PA</th><th>VG AA</th><th>VG MAR</th><th>F</th><th>Gene</th></tr></thead><tbody>${rows}</tbody>`;
+    }
+
+    function drawTrend(canvasId, series, labels, colors) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext("2d");
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, w, h);
+      const pad = 42;
+      const all = series.flat();
+      if (!all.length) return;
+      const xs = all.map(p => p.x), ys = all.map(p => p.y);
+      const minX = Math.min(...xs), maxX = Math.max(...xs, 10);
+      let minY = Math.min(...ys), maxY = Math.max(...ys);
+      if (minY === maxY) { minY -= 1; maxY += 1; }
+      ctx.strokeStyle = "#dce2d9";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = pad + (h - pad * 2) * i / 4;
+        ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(w - pad, y); ctx.stroke();
+      }
+      ctx.fillStyle = "#66736b";
+      ctx.font = "12px Arial";
+      ctx.fillText(fmt(maxY, 1), 8, pad + 4);
+      ctx.fillText(fmt(minY, 1), 8, h - pad + 4);
+      series.forEach((s, i) => {
+        ctx.strokeStyle = colors[i % colors.length];
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        s.forEach((p, idx) => {
+          const x = pad + (p.x - minX) / Math.max(1, maxX - minX) * (w - pad * 2);
+          const y = h - pad - (p.y - minY) / (maxY - minY) * (h - pad * 2);
+          idx ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        });
+        ctx.stroke();
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.fillText(labels[i], pad + 10 + i * 110, 22);
+      });
+      ctx.strokeStyle = "#89958e";
+      ctx.beginPath(); ctx.moveTo(pad, pad); ctx.lineTo(pad, h - pad); ctx.lineTo(w - pad, h - pad); ctx.stroke();
+    }
+
+    function dystociaRisk(sire, dam) {
+      const expectedBw = traits.bw.base + ((sire?.bv.bw || 0) + (dam?.bv.bw || 0)) / 2;
+      return Math.max(.03, Math.min(.45, .06 + (expectedBw - 38) * .035));
+    }
+
+    function lethalRisk(sire, dam) {
+      const p = g => g === "AA" ? 0 : g === "Aa" ? .5 : 1;
+      return p(sire.lethal) * p(dam.lethal);
+    }
+
+    function marketPrice(a) {
+      return Math.max(5000, 9000 + a.index * 18);
+    }
+
+    function buyBull(index) {
+      const bull = state.market[index];
+      const price = marketPrice(bull);
+      if (!bull || state.cash < price) return;
+      state.cash -= price;
+      bull.market = false;
+      bull.active = true;
+      state.animals.push(bull);
+      state.market.splice(index, 1);
+      state.market.push(makeAnimal({ sex: "M", gen: state.year, market: true, boost: 10 + Math.random() * 14 }));
+      addFeedback(`Touro externo ${bull.id} comprado por ${money(price)}. Isso ajuda a elevar mérito genético e abrir base genética.`);
+      render();
+    }
+
+    function autoSelect() {
+      state.selected.clear();
+      activeBySex("M").sort((a, b) => b.index - a.index).slice(0, 3).forEach(a => state.selected.add(a.id));
+      activeBySex("F").sort((a, b) => b.index - a.index).slice(0, 24).forEach(a => state.selected.add(a.id));
+      addFeedback("Candidatos selecionados por índice econômico. Confira PN, acurácia e parentesco antes de acasalar.");
+      render();
+    }
+
+    function clearSelection() {
+      state.selected.clear();
+      addFeedback("Seleção limpa. Você pode marcar novamente machos e fêmeas no Rebanho.");
+      render();
+    }
+
+    function sellSelected() {
+      const ids = [...state.selected];
+      if (!ids.length) return;
+      let revenue = 0;
+      ids.forEach(id => {
+        const a = findAnimal(id);
+        if (!a || !a.active) return;
+        const value = Math.max(650, 1200 + a.index * 6 + (a.sex === "F" ? 450 : 0));
+        revenue += value;
+        a.active = false;
+      });
+      state.cash += revenue;
+      state.selected.clear();
+      addEvent(`${ids.length} animais vendidos. Receita total ${money(revenue)}.`);
+      addFeedback("Venda concluída. Descartar animais com baixo índice mantém o rebanho manejável, mas vender jovens superiores cedo reduz progresso.");
+      render();
+    }
+
+    function addPair() {
+      const sire = findAnimal(document.getElementById("sireSelect").value);
+      const dam = findAnimal(document.getElementById("damSelect").value);
+      if (!sire || !dam) return;
+      const rel = relationship(sire, dam);
+      if (rel >= .5) {
+        addFeedback(`Acasalamento ${sire.id} x ${dam.id} bloqueado por parentesco alto.`);
+        render();
+        return;
+      }
+      state.pairs.push({ sireId: sire.id, damId: dam.id });
+      render();
+    }
+
+    function selectedBySex(sex) {
+      return [...state.selected].map(findAnimal).filter(a => a && a.active && a.sex === sex);
+    }
+
+    function matingValue(animal, key) {
+      if (!animal) return 0;
+      if (key === "index") return animal.index;
+      return animal.epd[key] || 0;
+    }
+
+    function canPair(sire, dam) {
+      return sire && dam && sire.active && dam.active && sire.sex === "M" && dam.sex === "F" && relationship(sire, dam) < .5;
+    }
+
+    function addPairIfAllowed(sire, dam) {
+      if (!canPair(sire, dam)) return false;
+      const exists = state.pairs.some(p => p.sireId === sire.id && p.damId === dam.id);
+      if (!exists) state.pairs.push({ sireId: sire.id, damId: dam.id });
+      return !exists;
+    }
+
+    function buildPairsFromSelected() {
+      let sires = selectedBySex("M").sort((a, b) => b.index - a.index);
+      let dams = selectedBySex("F").sort((a, b) => b.index - a.index);
+      if (!sires.length) sires = activeBySex("M").sort((a, b) => b.index - a.index).slice(0, 3);
+      if (!dams.length) dams = activeBySex("F").sort((a, b) => b.index - a.index).slice(0, 24);
+      let added = 0, blocked = 0;
+      dams.forEach((dam, i) => {
+        const orderedSires = [...sires.slice(i % sires.length), ...sires.slice(0, i % sires.length)];
+        const sire = orderedSires.find(s => canPair(s, dam));
+        if (sire && addPairIfAllowed(sire, dam)) added += 1;
+        else blocked += 1;
+      });
+      addFeedback(`${added} acasalamentos montados a partir da seleção. ${blocked ? `${blocked} vacas ficaram sem par por parentesco alto.` : "Todos os pares passaram no filtro de parentesco."}`);
+      render();
+    }
+
+    function shuffle(list) {
+      const copy = [...list];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function generatePairsByStrategy() {
+      const trait = document.getElementById("matingTrait").value;
+      const strategy = document.getElementById("matingStrategy").value;
+      let sires = selectedBySex("M");
+      let dams = selectedBySex("F");
+      if (!sires.length || !dams.length) {
+        addFeedback("Selecione pelo menos um touro e uma vaca no Rebanho antes de gerar pares por estratégia.");
+        render();
+        return;
+      }
+
+      if (strategy === "random") {
+        sires = shuffle(sires);
+        dams = shuffle(dams);
+      } else {
+        sires = sires.sort((a, b) => matingValue(b, trait) - matingValue(a, trait));
+        dams = dams.sort((a, b) => matingValue(b, trait) - matingValue(a, trait));
+        if (strategy === "disassortative") dams.reverse();
+      }
+
+      state.pairs = [];
+      let added = 0, blocked = 0;
+      dams.forEach((dam, i) => {
+        const start = i % sires.length;
+        const orderedSires = [...sires.slice(start), ...sires.slice(0, start)];
+        const sire = orderedSires.find(s => canPair(s, dam));
+        if (sire && addPairIfAllowed(sire, dam)) added += 1;
+        else blocked += 1;
+      });
+
+      const labels = {
+        random: "aleatória",
+        assortative: "assortativa",
+        disassortative: "disassortativa"
+      };
+      addFeedback(`Lista refeita com estratégia ${labels[strategy]} usando ${trait === "index" ? "índice econômico" : traits[trait].full}. ${added} pares criados; ${blocked} bloqueados por parentesco alto.`);
+      render();
+    }
+
+    function mateSelectedDamsWithCurrentSire() {
+      const sire = findAnimal(document.getElementById("sireSelect").value);
+      const dams = selectedBySex("F").sort((a, b) => b.index - a.index);
+      if (!sire || !dams.length) {
+        addFeedback("Escolha um touro e selecione vacas no Rebanho antes de aplicar este acasalamento.");
+        render();
+        return;
+      }
+      let added = 0, blocked = 0;
+      dams.forEach(dam => addPairIfAllowed(sire, dam) ? added += 1 : blocked += 1);
+      addFeedback(`${sire.id} aplicado em ${added} vacas selecionadas. ${blocked ? `${blocked} pares foram ignorados por repetição ou parentesco alto.` : ""}`);
+      render();
+    }
+
+    function simulateGeneration() {
+      if (state.year >= 10) {
+        addFeedback("Projeto concluído em 10 anos. Reinicie para outro cenário ou analise os relatórios finais.");
+        render();
+        return;
+      }
+      if (!state.pairs.length) {
+        addFeedback("Defina acasalamentos antes de gerar a próxima safra.");
+        render();
+        return;
+      }
+      const calves = [];
+      let dead = 0, dystocia = 0;
+      const pairCount = state.pairs.length;
+      state.pairs.forEach(p => {
+        const sire = findAnimal(p.sireId), dam = findAnimal(p.damId);
+        if (!sire || !dam || !sire.active || !dam.active) return;
+        sire.calves += 1;
+        dam.calves += 1;
+        const calf = makeAnimal({ sex: Math.random() < .5 ? "M" : "F", sire, dam, gen: state.year + 1 });
+        if (Math.random() < dystociaRisk(sire, dam)) {
+          dystocia += 1;
+          calf.pheno.ww -= 12;
+          calf.pheno.yw -= 18;
+        }
+        if (calf.dead) dead += 1;
+        calves.push(calf);
+      });
+      state.animals.forEach(a => { if (a.active) a.age += 1; });
+      calves.forEach(c => { if (!c.dead) c.age = 0; state.animals.push(c); });
+      state.year += 1;
+      state.pairs = [];
+      cullToCapacity();
+      activeAnimals().forEach(updateEvaluation);
+      recordHistory();
+      addEvent(`${calves.length} bezerros gerados; ${dead} removidos por genótipo letal aa; ${dystocia} sofreram penalidade de distocia.`);
+      giveFeedback(dead, dystocia, pairCount);
+      render();
+    }
+
+    function cullToCapacity() {
+      const capacity = 65;
+      const herd = activeAnimals();
+      if (herd.length <= capacity) return;
+      const excess = herd.length - capacity;
+      const culls = herd.sort((a, b) => a.index - b.index).slice(0, excess);
+      let revenue = 0;
+      culls.forEach(a => {
+        a.active = false;
+        revenue += Math.max(500, 1000 + a.index * 5);
+      });
+      state.cash += revenue;
+      addEvent(`Descarte automático por capacidade: ${excess} animais vendidos por ${money(revenue)}.`);
+    }
+
+    function giveFeedback(dead, dystocia, pairCount) {
+      const herd = activeAnimals();
+      const f = mean(herd.map(a => a.f));
+      const bw = mean(herd.map(a => a.epd.bw));
+      if (f > .0625) addFeedback("A consanguinidade média passou de 6,25%. Use touros externos ou distribua melhor os acasalamentos.");
+      if (bw > 1.8 || dystocia > pairCount * .18) addFeedback("Peso ao nascer e distocia estão pressionando o sistema. Equilibre PA com EPD PN menor.");
+      if (dead > 0) addFeedback("Apareceram bezerros aa. Evite cruzar portadores quando o modo professor revelar genótipos.");
+      if (activeBySex("M").length < 2) addFeedback("Há poucos touros ativos. Isso aumenta risco de gargalo genético.");
+      if (state.cash < 0) addFeedback("Caixa negativo. A estratégia genética precisa caber no orçamento.");
+    }
+
+    document.querySelectorAll("[data-view]").forEach(btn => btn.addEventListener("click", e => {
+      document.querySelectorAll("[data-view]").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      e.target.classList.add("active");
+      document.getElementById(e.target.dataset.view).classList.add("active");
+      render();
+    }));
+    document.getElementById("traitSort").addEventListener("change", renderHerd);
+    document.getElementById("autoSelectBtn").addEventListener("click", autoSelect);
+    document.getElementById("clearSelectionBtn").addEventListener("click", clearSelection);
+    document.getElementById("sellSelectedBtn").addEventListener("click", sellSelected);
+    document.getElementById("addPairBtn").addEventListener("click", addPair);
+    document.getElementById("generateStrategyPairsBtn").addEventListener("click", generatePairsByStrategy);
+    document.getElementById("buildPairsBtn").addEventListener("click", buildPairsFromSelected);
+    document.getElementById("sireToSelectedBtn").addEventListener("click", mateSelectedDamsWithCurrentSire);
+    document.getElementById("simulateBtn").addEventListener("click", simulateGeneration);
+    document.getElementById("clearPairsBtn").addEventListener("click", () => { state.pairs = []; renderMating(); });
+    document.getElementById("clearSelectionFromMatingBtn").addEventListener("click", clearSelection);
+    document.getElementById("sireSelect").addEventListener("change", renderMatingPreview);
+    document.getElementById("damSelect").addEventListener("change", renderMatingPreview);
+    document.getElementById("toggleTruthBtn").addEventListener("click", () => { state.revealTruth = !state.revealTruth; renderTeacher(); });
+    document.getElementById("resetBtn").addEventListener("click", initialize);
+    document.getElementById("helpBtn").addEventListener("click", () => document.getElementById("sourceModal").classList.add("active"));
+    document.getElementById("exportJsonBtn").addEventListener("click", exportJson);
+    document.getElementById("exportCsvBtn").addEventListener("click", exportCsv);
+    document.getElementById("closeHelpBtn").addEventListener("click", () => document.getElementById("sourceModal").classList.remove("active"));
+    document.getElementById("sourceModal").addEventListener("click", e => {
+      if (e.target.id === "sourceModal") e.currentTarget.classList.remove("active");
+    });
+
+    initialize();
+  </script>
+</body>
+</html>
