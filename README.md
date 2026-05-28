@@ -2,6 +2,8 @@
 
 Aplicativo HTML/CSS/JS autocontido inspirado no Cowgame original para ensino de melhoramento genetico de bovinos de corte.
 
+Desenvolvido pelo Prof. Gerson Barreto Mourão, ESALQ/USP.
+
 ## Como abrir
 
 Abra `index.html` diretamente no navegador, ou rode um servidor local temporario:
@@ -20,13 +22,15 @@ http://127.0.0.1:4173/
 
 1. Entre em `Rebanho` e marque touros e vacas clicando na linha ou nas caixas da primeira coluna. O botao `Selecionar candidatos` faz uma selecao inicial por indice.
 2. Entre em `Acasalamentos`.
-3. Use uma destas opcoes:
-   - Escolha um criterio e uma estrategia, depois clique em `Gerar pares`.
-   - `Aleatorio` distribui as vacas entre os touros selecionados sem ordenar.
-   - `Assortativo` acasala melhores machos com melhores femeas pelo criterio escolhido.
-   - `Disassortativo` acasala melhores machos com femeas de menor valor pelo criterio escolhido.
-   - Para testar uma combinacao especifica, escolha um touro e uma vaca nos menus e clique em `Adicionar`.
-4. Confira a lista de pares e clique em `Gerar proxima safra`.
+3. A tela mostra duas tabelas com os touros e vacas selecionados, incluindo ID, DEP para peso ao ano, acuracia, fenotipo PA e genotipo letal.
+4. Use o assistente sequencial para escolher um touro e marcar as vacas que serao designadas a ele. Vacas ja designadas saem da lista dos proximos touros.
+5. Acompanhe o contador `Vacas designadas: x/y | Restantes: z`.
+6. Use uma destas opcoes auxiliares:
+   - `Distribuir igualmente`: divide as vacas de forma equilibrada entre os touros.
+   - `Designar todas a este touro`: aplica o touro atual a todas as vacas restantes.
+   - `Designar N restantes`: informa um numero e designa essa quantidade ao touro atual.
+   - `Gerar por estrategia`: cria pares automaticamente por criterio aleatorio, assortativo ou disassortativo.
+7. Confira a lista de pares e clique em `Gerar proxima safra`.
 
 Use `Limpar selecao` para refazer a escolha de reprodutores e `Limpar pares` para refazer apenas a lista de acasalamentos.
 

@@ -7,18 +7,19 @@
   <style>
     :root {
       color-scheme: light;
-      --ink: #17211b;
-      --muted: #62706a;
-      --line: #d8ded6;
+      --ink: #13221d;
+      --muted: #65736d;
+      --line: #d9e1dd;
       --panel: #ffffff;
-      --soft: #f4f7f1;
-      --brand: #1f6f55;
-      --brand-2: #b34b35;
-      --gold: #b28322;
-      --blue: #315c91;
-      --bad: #a83232;
-      --good: #23704d;
-      --shadow: 0 12px 30px rgba(23, 33, 27, 0.08);
+      --soft: #f4f7f5;
+      --brand: #126e5a;
+      --brand-2: #b94b3b;
+      --gold: #b8891f;
+      --blue: #2f629f;
+      --bad: #b73737;
+      --warn: #9a6a12;
+      --good: #20734f;
+      --shadow: 0 18px 48px rgba(19, 34, 29, 0.1);
     }
 
     * { box-sizing: border-box; }
@@ -26,11 +27,13 @@
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
       color: var(--ink);
-      background: linear-gradient(180deg, #eef4ec 0, #f8faf6 320px, #f8faf6 100%);
+      background:
+        radial-gradient(circle at top left, rgba(18, 110, 90, .12), transparent 360px),
+        linear-gradient(180deg, #edf5f2 0, #f7faf8 340px, #f7faf8 100%);
     }
 
     header {
-      min-height: 210px;
+      min-height: 240px;
       padding: 28px clamp(16px, 4vw, 54px) 18px;
       background:
         linear-gradient(90deg, rgba(23, 33, 27, .88), rgba(23, 33, 27, .56)),
@@ -55,6 +58,21 @@
       color: rgba(255, 255, 255, .88);
     }
 
+    .byline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 30px;
+      margin-top: 18px;
+      padding: 0 12px;
+      border: 1px solid rgba(255, 255, 255, .32);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .14);
+      color: rgba(255, 255, 255, .92);
+      font-size: 13px;
+      backdrop-filter: blur(8px);
+    }
+
     main {
       width: min(1380px, calc(100% - 28px));
       margin: -34px auto 40px;
@@ -76,6 +94,7 @@
       position: sticky;
       top: 0;
       z-index: 5;
+      backdrop-filter: blur(12px);
     }
 
     .tabs, .actions, .metric-grid, .pair-grid {
@@ -97,9 +116,10 @@
       padding: 0 12px;
       border-radius: 7px;
       cursor: pointer;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
     }
 
-    button:hover { border-color: #9fb1a8; }
+    button:hover { border-color: #9fb1a8; transform: translateY(-1px); }
     button.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
     button.warn { background: var(--brand-2); border-color: var(--brand-2); color: #fff; }
     button.active { background: #dfece5; border-color: #9dc5b5; color: #174934; }
@@ -130,6 +150,10 @@
     .panel {
       padding: 14px;
       overflow: hidden;
+    }
+
+    .panel.hero-panel {
+      background: linear-gradient(135deg, rgba(18, 110, 90, .1), #fff 52%, rgba(47, 98, 159, .08));
     }
 
     h2, h3 {
@@ -173,6 +197,13 @@
       display: grid;
       grid-template-columns: 1.1fr .9fr;
       gap: 14px;
+    }
+
+    .wide-split {
+      display: grid;
+      grid-template-columns: minmax(340px, .95fr) minmax(420px, 1.25fr);
+      gap: 14px;
+      align-items: start;
     }
 
     .table-wrap {
@@ -232,6 +263,7 @@
     .tag.good { color: var(--good); background: #e8f4ee; border-color: #c8e1d5; }
     .tag.bad { color: var(--bad); background: #faeaea; border-color: #e9caca; }
     .tag.gold { color: #6b4c0d; background: #fff5d8; border-color: #ead18a; }
+    .tag.warn { color: var(--warn); background: #fff6df; border-color: #ead28e; }
 
     .log {
       display: grid;
@@ -264,6 +296,82 @@
       margin-top: 10px;
       max-height: 380px;
       overflow: auto;
+    }
+
+    .mating-board {
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .sire-steps {
+      display: grid;
+      gap: 8px;
+    }
+
+    .sire-step {
+      display: grid;
+      gap: 4px;
+      width: 100%;
+      min-height: 54px;
+      text-align: left;
+      justify-items: start;
+    }
+
+    .sire-step.active {
+      background: #e7f3ef;
+      border-color: #97cbbd;
+    }
+
+    .sire-step.complete {
+      border-color: #b8d8c7;
+      background: #f1f8f4;
+    }
+
+    .dam-choice-list {
+      display: grid;
+      gap: 8px;
+      max-height: 430px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .dam-choice {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px;
+      background: #fff;
+    }
+
+    .dam-choice.blocked {
+      background: #fff7f7;
+      border-color: #edcaca;
+    }
+
+    .dam-choice.assigned {
+      background: #eef7f2;
+      border-color: #c3dfcf;
+    }
+
+    .progress-line {
+      display: grid;
+      gap: 6px;
+      margin: 10px 0 12px;
+    }
+
+    .progress-line .bar {
+      margin: 0;
+      height: 10px;
+    }
+
+    .mini-table {
+      min-width: 520px;
+      font-size: 12px;
     }
 
     .pair {
@@ -339,7 +447,7 @@
     .sources a { color: var(--blue); }
 
     @media (max-width: 980px) {
-      .content, .split { grid-template-columns: 1fr; }
+      .content, .split, .wide-split, .mating-board { grid-template-columns: 1fr; }
       .toolbar { grid-template-columns: 1fr; position: static; }
       aside { grid-template-columns: 1fr 1fr; }
     }
@@ -358,6 +466,7 @@
   <header>
     <h1>Cowgame Didático</h1>
     <p>Simulador de melhoramento de bovinos de corte inspirado no Cowgame: seleção, acasalamento, EPDs, acurácias, gene recessivo letal, mercado, consanguinidade e relatórios de progresso.</p>
+    <div class="byline">Desenvolvido pelo Prof. Gerson Barreto Mourão, ESALQ/USP</div>
   </header>
 
   <main>
@@ -442,12 +551,21 @@
         </div>
 
         <div id="mating" class="view">
-          <div class="split">
-            <div class="panel">
+          <div class="wide-split">
+            <div class="panel hero-panel">
               <h2>Acasalamento Dirigido</h2>
-              <p>Use os animais marcados no Rebanho para montar os pares por estratégia, ou adicione pares individuais quando quiser testar uma combinação específica.</p>
+              <p>Use os animais marcados no Rebanho e designe as vacas sequencialmente para cada touro. Cada vaca entra em apenas um acasalamento.</p>
               <div class="notes" style="margin-bottom: 10px;">
                 <div id="matingSelectionSummary">Nenhum animal selecionado para reprodução.</div>
+              </div>
+              <div class="progress-line">
+                <div id="matingProgressText" class="hint">Vacas designadas: 0/0 | Restantes: 0</div>
+                <div class="bar"><span id="matingProgressBar"></span></div>
+              </div>
+              <div class="actions" style="margin-bottom: 12px;">
+                <button id="equalDistributeBtn" class="primary">Distribuir igualmente</button>
+                <button id="clearPairsBtn">Limpar pares</button>
+                <button id="clearSelectionFromMatingBtn">Limpar seleção</button>
               </div>
               <div class="form-row">
                 <select id="matingTrait" aria-label="Critério de acasalamento">
@@ -462,33 +580,35 @@
                   <option value="assortative">Assortativo: melhores com melhores</option>
                   <option value="disassortative">Disassortativo: melhores com piores</option>
                 </select>
-                <button id="generateStrategyPairsBtn" class="primary">Gerar pares</button>
+                <button id="generateStrategyPairsBtn">Gerar por estratégia</button>
               </div>
-              <div class="actions" style="margin-bottom: 14px;">
-                <button id="clearPairsBtn">Limpar pares</button>
-                <button id="clearSelectionFromMatingBtn">Limpar seleção</button>
+              <div class="table-wrap" style="max-height: 210px; margin-top: 12px;">
+                <table id="selectedSiresTable" class="mini-table"></table>
               </div>
-              <h3>Par individual</h3>
-              <div class="form-row">
-                <select id="sireSelect" aria-label="Selecionar touro"></select>
-                <select id="damSelect" aria-label="Selecionar vaca"></select>
-                <button id="addPairBtn" class="primary">Adicionar</button>
+              <div class="table-wrap" style="max-height: 250px; margin-top: 12px;">
+                <table id="selectedDamsTable" class="mini-table"></table>
               </div>
-              <div class="actions" style="margin-bottom: 10px;">
-                <button id="buildPairsBtn">Montar pares dos selecionados</button>
-                <button id="sireToSelectedBtn">Touro atual nas vacas selecionadas</button>
+            </div>
+
+            <div class="panel">
+              <h2>Designação Sequencial</h2>
+              <div class="mating-board">
+                <div class="sire-steps" id="sireStepList"></div>
+                <div>
+                  <div id="currentSirePanel"></div>
+                  <div class="dam-choice-list" id="damChoiceList"></div>
+                </div>
               </div>
-              <div id="matingPreview" class="notes"></div>
               <div class="pair-list" id="pairList"></div>
               <div class="actions" style="margin-top: 12px;">
                 <button id="simulateBtn" class="primary">Gerar próxima safra</button>
               </div>
             </div>
-            <div class="panel">
-              <h2>Sumário de Touros</h2>
-              <div class="table-wrap">
-                <table id="sireSummary"></table>
-              </div>
+          </div>
+          <div class="panel" style="margin-top: 14px;">
+            <h2>Sumário de Touros</h2>
+            <div class="table-wrap">
+              <table id="sireSummary"></table>
             </div>
           </div>
         </div>
@@ -584,6 +704,7 @@
       feedback: [],
       history: [],
       revealTruth: false,
+      currentMatingSireId: null,
       market: []
     };
 
@@ -728,6 +849,7 @@
       state.feedback = [];
       state.history = [];
       state.revealTruth = false;
+      state.currentMatingSireId = null;
       for (let i = 0; i < 5; i++) state.animals.push(makeAnimal({ sex: "M", gen: 0 }));
       for (let i = 0; i < 50; i++) state.animals.push(makeAnimal({ sex: "F", gen: 0 }));
       state.market = Array.from({ length: 5 }, (_, i) => makeAnimal({ sex: "M", gen: 0, market: true, boost: 8 + i * 4 }));
@@ -991,20 +1113,23 @@
     }
 
     function renderMating() {
-      const sires = activeBySex("M").sort((a, b) => b.index - a.index);
-      const dams = activeBySex("F").sort((a, b) => b.index - a.index);
-      document.getElementById("sireSelect").innerHTML = sires.map(a => `<option value="${a.id}">${a.id} | EPD PA ${fmt(a.epd.yw)} | Acc ${fmt(a.acc.yw * 100, 0)}%</option>`).join("");
-      document.getElementById("damSelect").innerHTML = dams.map(a => `<option value="${a.id}">${a.id} | EPD PA ${fmt(a.epd.yw)} | F ${fmt(a.f * 100, 1)}%</option>`).join("");
-      renderMatingPreview();
+      const sires = selectedBySex("M").sort((a, b) => b.index - a.index);
+      const dams = selectedBySex("F").sort((a, b) => b.index - a.index);
+      state.pairs = state.pairs.filter(p => sires.some(s => s.id === p.sireId) && dams.some(d => d.id === p.damId));
+      if (!sires.some(s => s.id === state.currentMatingSireId)) state.currentMatingSireId = sires[0]?.id || null;
       renderSelectionSummaries();
+      renderSelectedParentTables(sires, dams);
+      renderMatingProgress(dams.length);
+      renderSireSteps(sires);
+      renderCurrentSirePanel(sires, dams);
       document.getElementById("pairList").innerHTML = state.pairs.map((p, i) => {
         const sire = findAnimal(p.sireId), dam = findAnimal(p.damId);
-        const rel = relationship(sire, dam);
+        const status = matingRiskStatus(sire, dam);
         return `<div class="pair">
-          <div><b>${p.sireId} x ${p.damId}</b><br><span class="hint">Parentesco ${fmt(rel * 100, 2)}%; risco distocia ${fmt(dystociaRisk(sire, dam) * 100, 0)}%; risco aa ${fmt(lethalRisk(sire, dam) * 100, 1)}%</span></div>
+          <div><b>${p.sireId} x ${p.damId}</b><br><span class="hint">Parentesco ${fmt(status.rel * 100, 2)}%; ${status.text}; distocia ${fmt(dystociaRisk(sire, dam) * 100, 0)}%; risco aa ${fmt(lethalRisk(sire, dam) * 100, 1)}%</span></div>
           <button data-remove-pair="${i}">Remover</button>
         </div>`;
-      }).join("") || `<div class="notes"><div>Nenhum acasalamento indicado ainda. Use os menus para adicionar um par, ou selecione animais no Rebanho e use os botões acima.</div></div>`;
+      }).join("") || `<div class="notes"><div>Nenhum acasalamento indicado ainda. Selecione touros e vacas no Rebanho, depois use a designação sequencial.</div></div>`;
       document.querySelectorAll("[data-remove-pair]").forEach(btn => btn.addEventListener("click", e => {
         state.pairs.splice(Number(e.target.dataset.removePair), 1);
         renderMating();
@@ -1012,17 +1137,84 @@
       renderSireSummary();
     }
 
-    function renderMatingPreview() {
-      const sire = findAnimal(document.getElementById("sireSelect").value);
-      const dam = findAnimal(document.getElementById("damSelect").value);
-      if (!sire || !dam) return;
-      const rel = relationship(sire, dam);
-      const blocked = rel >= .5;
-      const risk = dystociaRisk(sire, dam);
-      document.getElementById("matingPreview").innerHTML = `
-        <div><b>Prévia:</b> parentesco ${fmt(rel * 100, 2)}%, F esperado ${fmt(rel * 50, 2)}%, distocia ${fmt(risk * 100, 0)}%, letal aa ${fmt(lethalRisk(sire, dam) * 100, 1)}%.</div>
-        <div>${blocked ? "<span class='tag bad'>Acasalamento bloqueado</span> Pai-filha, mãe-filho ou equivalentes não são aceitos." : "<span class='tag good'>Acasalamento permitido</span> Ainda assim, monitore consanguinidade e peso ao nascer."}</div>
+    function renderSelectedParentTables(sires, dams) {
+      document.getElementById("selectedSiresTable").innerHTML = selectedParentTable("Touros selecionados", sires);
+      document.getElementById("selectedDamsTable").innerHTML = selectedParentTable("Vacas selecionadas", dams);
+    }
+
+    function selectedParentTable(title, animals) {
+      const rows = animals.map(a => `<tr>
+        <td>${a.id}</td><td>${fmt(a.epd.yw)}</td><td>${fmt(a.acc.yw * 100, 0)}%</td><td>${fmt(a.pheno.yw)}</td><td>${a.lethal}</td>
+      </tr>`).join("");
+      return `<thead><tr><th colspan="5" style="text-align:left;">${title} (${animals.length})</th></tr><tr><th>ID</th><th>DEP PA</th><th>Acurácia</th><th>Fenótipo PA</th><th>Genótipo letal</th></tr></thead><tbody>${rows || `<tr><td colspan="5" style="text-align:left;">Nenhum animal selecionado.</td></tr>`}</tbody>`;
+    }
+
+    function renderMatingProgress(totalDams) {
+      const assigned = assignedDamIds().size;
+      const remaining = Math.max(0, totalDams - assigned);
+      const pct = totalDams ? assigned / totalDams * 100 : 0;
+      document.getElementById("matingProgressText").textContent = `Vacas designadas: ${assigned}/${totalDams} | Restantes: ${remaining}`;
+      document.getElementById("matingProgressBar").style.width = `${pct}%`;
+      document.getElementById("simulateBtn").disabled = totalDams > 0 && remaining > 0;
+    }
+
+    function renderSireSteps(sires) {
+      document.getElementById("sireStepList").innerHTML = sires.map((sire, i) => {
+        const count = state.pairs.filter(p => p.sireId === sire.id).length;
+        const cls = sire.id === state.currentMatingSireId ? "active" : count ? "complete" : "";
+        return `<button class="sire-step ${cls}" data-sire-step="${sire.id}">
+          <b>${i + 1}. ${sire.id}</b>
+          <span class="hint">${count} vaca(s) | DEP PA ${fmt(sire.epd.yw)} | Acc ${fmt(sire.acc.yw * 100, 0)}%</span>
+        </button>`;
+      }).join("") || `<div class="notes"><div>Selecione pelo menos um touro no Rebanho.</div></div>`;
+      document.querySelectorAll("[data-sire-step]").forEach(btn => btn.addEventListener("click", e => {
+        state.currentMatingSireId = e.currentTarget.dataset.sireStep;
+        renderMating();
+      }));
+    }
+
+    function renderCurrentSirePanel(sires, dams) {
+      const sire = findAnimal(state.currentMatingSireId);
+      const panel = document.getElementById("currentSirePanel");
+      const list = document.getElementById("damChoiceList");
+      if (!sire || !sires.length || !dams.length) {
+        panel.innerHTML = `<div class="notes"><div>Selecione touros e vacas na aba Rebanho para iniciar a designação.</div></div>`;
+        list.innerHTML = "";
+        return;
+      }
+      const assignedToSire = state.pairs.filter(p => p.sireId === sire.id).map(p => p.damId);
+      const remaining = dams.filter(dam => !assignedDamIds().has(dam.id));
+      const visibleDams = [...dams.filter(dam => assignedToSire.includes(dam.id)), ...remaining];
+      panel.innerHTML = `
+        <div class="notes" style="margin-bottom: 10px;">
+          <div><b>${sire.id}</b> selecionado. Marque vacas abaixo para designar a este touro. Vacas já usadas por outros touros ficam fora desta lista.</div>
+        </div>
+        <div class="form-row">
+          <input id="assignCountInput" type="number" min="1" max="${remaining.length}" placeholder="n vacas restantes">
+          <button id="assignCountBtn">Designar N restantes</button>
+          <button id="assignAllCurrentBtn" class="warn">Designar todas a este touro</button>
+        </div>
       `;
+      list.innerHTML = visibleDams.map(dam => {
+        const checked = assignedToSire.includes(dam.id);
+        const status = matingRiskStatus(sire, dam);
+        return `<label class="dam-choice ${checked ? "assigned" : ""} ${status.level === "bad" ? "blocked" : ""}">
+          <input type="checkbox" data-dam-toggle="${dam.id}" ${checked ? "checked" : ""} ${status.level === "bad" && !checked ? "disabled" : ""}>
+          <span><b>${dam.id}</b><br><span class="hint">DEP PA ${fmt(dam.epd.yw)} | Fenótipo PA ${fmt(dam.pheno.yw)} | gene ${dam.lethal}</span></span>
+          <span class="tag ${status.level}">${status.label}</span>
+        </label>`;
+      }).join("") || `<div class="notes"><div>Todas as vacas selecionadas já foram designadas.</div></div>`;
+      document.querySelectorAll("[data-dam-toggle]").forEach(input => input.addEventListener("change", e => toggleDamForCurrentSire(e.target.dataset.damToggle, e.target.checked)));
+      document.getElementById("assignAllCurrentBtn").addEventListener("click", () => assignAllRemainingToSire(sire.id));
+      document.getElementById("assignCountBtn").addEventListener("click", () => assignCountToSire(sire.id));
+    }
+
+    function matingRiskStatus(sire, dam) {
+      const rel = relationship(sire, dam);
+      if (rel >= .5) return { rel, level: "bad", label: "Não permitido", text: "Pai-filha/mãe-filho ou equivalente" };
+      if (rel >= .25) return { rel, level: "warn", label: "Alerta", text: "Meio-irmãos ou parentesco próximo" };
+      if (rel >= .125) return { rel, level: "warn", label: "Atenção", text: "Parentesco moderado" };
+      return { rel, level: "good", label: "OK", text: "Não aparentados ou parentesco baixo" };
     }
 
     function renderSireSummary() {
@@ -1171,22 +1363,16 @@
       render();
     }
 
-    function addPair() {
-      const sire = findAnimal(document.getElementById("sireSelect").value);
-      const dam = findAnimal(document.getElementById("damSelect").value);
-      if (!sire || !dam) return;
-      const rel = relationship(sire, dam);
-      if (rel >= .5) {
-        addFeedback(`Acasalamento ${sire.id} x ${dam.id} bloqueado por parentesco alto.`);
-        render();
-        return;
-      }
-      state.pairs.push({ sireId: sire.id, damId: dam.id });
-      render();
-    }
-
     function selectedBySex(sex) {
       return [...state.selected].map(findAnimal).filter(a => a && a.active && a.sex === sex);
+    }
+
+    function assignedDamIds() {
+      return new Set(state.pairs.map(p => p.damId));
+    }
+
+    function assignedDamIdsExceptSire(sireId) {
+      return new Set(state.pairs.filter(p => p.sireId !== sireId).map(p => p.damId));
     }
 
     function matingValue(animal, key) {
@@ -1201,9 +1387,64 @@
 
     function addPairIfAllowed(sire, dam) {
       if (!canPair(sire, dam)) return false;
+      if (state.pairs.some(p => p.damId === dam.id && p.sireId !== sire.id)) return false;
       const exists = state.pairs.some(p => p.sireId === sire.id && p.damId === dam.id);
       if (!exists) state.pairs.push({ sireId: sire.id, damId: dam.id });
       return !exists;
+    }
+
+    function toggleDamForCurrentSire(damId, checked) {
+      const sire = findAnimal(state.currentMatingSireId);
+      const dam = findAnimal(damId);
+      if (!sire || !dam) return;
+      if (!checked) {
+        state.pairs = state.pairs.filter(p => !(p.sireId === sire.id && p.damId === dam.id));
+        render();
+        return;
+      }
+      const blockedByOther = assignedDamIdsExceptSire(sire.id).has(dam.id);
+      if (blockedByOther || !canPair(sire, dam)) {
+        addFeedback(`${dam.id} não pôde ser designada a ${sire.id}: vaca já usada ou parentesco não permitido.`);
+        render();
+        return;
+      }
+      addPairIfAllowed(sire, dam);
+      render();
+    }
+
+    function remainingSelectedDamsForSire(sireId) {
+      const usedByOthers = assignedDamIdsExceptSire(sireId);
+      return selectedBySex("F").filter(dam => !usedByOthers.has(dam.id) && !state.pairs.some(p => p.sireId === sireId && p.damId === dam.id));
+    }
+
+    function assignAllRemainingToSire(sireId) {
+      const sire = findAnimal(sireId);
+      if (!sire) return;
+      let added = 0, blocked = 0;
+      remainingSelectedDamsForSire(sireId).forEach(dam => addPairIfAllowed(sire, dam) ? added += 1 : blocked += 1);
+      addFeedback(`${added} vaca(s) restantes designadas a ${sire.id}. ${blocked ? `${blocked} bloqueadas por parentesco.` : ""}`);
+      render();
+    }
+
+    function assignCountToSire(sireId) {
+      const input = document.getElementById("assignCountInput");
+      const count = Number(input?.value || 0);
+      const sire = findAnimal(sireId);
+      const remaining = remainingSelectedDamsForSire(sireId);
+      if (!sire || !Number.isInteger(count) || count <= 0) {
+        addFeedback("Informe um número positivo de vacas para designar.");
+        render();
+        return;
+      }
+      if (count > remaining.length) {
+        addFeedback(`Não há ${count} vacas restantes para ${sire.id}. Restam ${remaining.length}.`);
+        render();
+        return;
+      }
+      let added = 0, blocked = 0;
+      remaining.slice(0, count).forEach(dam => addPairIfAllowed(sire, dam) ? added += 1 : blocked += 1);
+      addFeedback(`${added} vaca(s) designadas a ${sire.id}. ${blocked ? `${blocked} bloqueadas por parentesco.` : ""}`);
+      render();
     }
 
     function buildPairsFromSelected() {
@@ -1219,6 +1460,28 @@
         else blocked += 1;
       });
       addFeedback(`${added} acasalamentos montados a partir da seleção. ${blocked ? `${blocked} vacas ficaram sem par por parentesco alto.` : "Todos os pares passaram no filtro de parentesco."}`);
+      render();
+    }
+
+    function distributeEqually() {
+      const sires = selectedBySex("M").sort((a, b) => b.index - a.index);
+      const dams = selectedBySex("F").sort((a, b) => b.index - a.index);
+      if (!sires.length || !dams.length) {
+        addFeedback("Selecione touros e vacas no Rebanho antes de distribuir igualmente.");
+        render();
+        return;
+      }
+      state.pairs = [];
+      let added = 0, blocked = 0;
+      dams.forEach((dam, i) => {
+        const start = i % sires.length;
+        const orderedSires = [...sires.slice(start), ...sires.slice(0, start)];
+        const sire = orderedSires.find(s => canPair(s, dam));
+        if (sire && addPairIfAllowed(sire, dam)) added += 1;
+        else blocked += 1;
+      });
+      state.currentMatingSireId = sires[0].id;
+      addFeedback(`Distribuição equilibrada criada: ${added} vaca(s) designadas entre ${sires.length} touro(s). ${blocked ? `${blocked} vacas ficaram sem par por parentesco alto.` : ""}`);
       render();
     }
 
@@ -1270,20 +1533,6 @@
       render();
     }
 
-    function mateSelectedDamsWithCurrentSire() {
-      const sire = findAnimal(document.getElementById("sireSelect").value);
-      const dams = selectedBySex("F").sort((a, b) => b.index - a.index);
-      if (!sire || !dams.length) {
-        addFeedback("Escolha um touro e selecione vacas no Rebanho antes de aplicar este acasalamento.");
-        render();
-        return;
-      }
-      let added = 0, blocked = 0;
-      dams.forEach(dam => addPairIfAllowed(sire, dam) ? added += 1 : blocked += 1);
-      addFeedback(`${sire.id} aplicado em ${added} vacas selecionadas. ${blocked ? `${blocked} pares foram ignorados por repetição ou parentesco alto.` : ""}`);
-      render();
-    }
-
     function simulateGeneration() {
       if (state.year >= 10) {
         addFeedback("Projeto concluído em 10 anos. Reinicie para outro cenário ou analise os relatórios finais.");
@@ -1292,6 +1541,13 @@
       }
       if (!state.pairs.length) {
         addFeedback("Defina acasalamentos antes de gerar a próxima safra.");
+        render();
+        return;
+      }
+      const selectedDams = selectedBySex("F");
+      const missingDams = selectedDams.filter(dam => !assignedDamIds().has(dam.id));
+      if (selectedDams.length && missingDams.length) {
+        addFeedback(`Ainda há ${missingDams.length} vaca(s) selecionadas sem designação. Complete os pares antes de gerar a próxima safra.`);
         render();
         return;
       }
@@ -1361,15 +1617,11 @@
     document.getElementById("autoSelectBtn").addEventListener("click", autoSelect);
     document.getElementById("clearSelectionBtn").addEventListener("click", clearSelection);
     document.getElementById("sellSelectedBtn").addEventListener("click", sellSelected);
-    document.getElementById("addPairBtn").addEventListener("click", addPair);
+    document.getElementById("equalDistributeBtn").addEventListener("click", distributeEqually);
     document.getElementById("generateStrategyPairsBtn").addEventListener("click", generatePairsByStrategy);
-    document.getElementById("buildPairsBtn").addEventListener("click", buildPairsFromSelected);
-    document.getElementById("sireToSelectedBtn").addEventListener("click", mateSelectedDamsWithCurrentSire);
     document.getElementById("simulateBtn").addEventListener("click", simulateGeneration);
     document.getElementById("clearPairsBtn").addEventListener("click", () => { state.pairs = []; renderMating(); });
     document.getElementById("clearSelectionFromMatingBtn").addEventListener("click", clearSelection);
-    document.getElementById("sireSelect").addEventListener("change", renderMatingPreview);
-    document.getElementById("damSelect").addEventListener("change", renderMatingPreview);
     document.getElementById("toggleTruthBtn").addEventListener("click", () => { state.revealTruth = !state.revealTruth; renderTeacher(); });
     document.getElementById("resetBtn").addEventListener("click", initialize);
     document.getElementById("helpBtn").addEventListener("click", () => document.getElementById("sourceModal").classList.add("active"));
