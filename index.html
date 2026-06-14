@@ -537,6 +537,7 @@
                   <option value="index">Índice econômico</option>
                 </select>
                 <button id="autoSelectBtn">Selecionar candidatos</button>
+                <button id="selectAllBtn">Marcar todos</button>
                 <button id="clearSelectionBtn">Limpar seleção</button>
                 <button id="sellSelectedBtn">Vender selecionados</button>
               </div>
@@ -1339,6 +1340,12 @@
       render();
     }
 
+    function selectAllActive() {
+      activeAnimals().forEach(a => state.selected.add(a.id));
+      addFeedback(`${state.selected.size} animais ativos marcados. Você pode desmarcar indivíduos clicando na linha ou na caixa de seleção.`);
+      render();
+    }
+
     function clearSelection() {
       state.selected.clear();
       addFeedback("Seleção limpa. Você pode marcar novamente machos e fêmeas no Rebanho.");
@@ -1627,6 +1634,7 @@
     }));
     document.getElementById("traitSort").addEventListener("change", renderHerd);
     document.getElementById("autoSelectBtn").addEventListener("click", autoSelect);
+    document.getElementById("selectAllBtn").addEventListener("click", selectAllActive);
     document.getElementById("clearSelectionBtn").addEventListener("click", clearSelection);
     document.getElementById("sellSelectedBtn").addEventListener("click", sellSelected);
     document.getElementById("equalDistributeBtn").addEventListener("click", distributeEqually);
