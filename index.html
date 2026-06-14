@@ -536,7 +536,6 @@
                   <option value="marb">EPD marmoreio</option>
                   <option value="index">Índice econômico</option>
                 </select>
-                <button id="autoSelectBtn">Selecionar candidatos</button>
                 <button id="selectAllBtn">Marcar todos</button>
                 <button id="clearSelectionBtn">Limpar seleção</button>
                 <button id="sellSelectedBtn">Vender selecionados</button>
@@ -1054,7 +1053,7 @@
       const herdSummary = document.getElementById("selectionSummary");
       const matingSummary = document.getElementById("matingSelectionSummary");
       if (herdSummary) herdSummary.textContent = state.selected.size ? `${text} Clique em uma caixa marcada para desselecionar, ou use Limpar seleção.` : "Nenhum animal selecionado.";
-      if (matingSummary) matingSummary.textContent = state.selected.size ? text : "Nenhum animal selecionado para reprodução. Volte ao Rebanho e marque machos e fêmeas, ou use Selecionar candidatos.";
+      if (matingSummary) matingSummary.textContent = state.selected.size ? text : "Nenhum animal selecionado para reprodução. Volte ao Rebanho e marque manualmente machos e fêmeas, ou use Marcar todos para começar de uma seleção completa.";
     }
 
     function score() {
@@ -1329,14 +1328,6 @@
       state.market.splice(index, 1);
       state.market.push(makeAnimal({ sex: "M", gen: state.year, market: true, boost: 10 + Math.random() * 14 }));
       addFeedback(`Touro externo ${bull.id} comprado por ${money(price)}. Isso ajuda a elevar mérito genético e abrir base genética.`);
-      render();
-    }
-
-    function autoSelect() {
-      state.selected.clear();
-      activeBySex("M").sort((a, b) => b.index - a.index).slice(0, 3).forEach(a => state.selected.add(a.id));
-      activeBySex("F").sort((a, b) => b.index - a.index).slice(0, 24).forEach(a => state.selected.add(a.id));
-      addFeedback("Candidatos selecionados por índice econômico. Confira PN, acurácia e parentesco antes de acasalar.");
       render();
     }
 
@@ -1633,7 +1624,6 @@
       render();
     }));
     document.getElementById("traitSort").addEventListener("change", renderHerd);
-    document.getElementById("autoSelectBtn").addEventListener("click", autoSelect);
     document.getElementById("selectAllBtn").addEventListener("click", selectAllActive);
     document.getElementById("clearSelectionBtn").addEventListener("click", clearSelection);
     document.getElementById("sellSelectedBtn").addEventListener("click", sellSelected);

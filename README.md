@@ -20,7 +20,7 @@ http://127.0.0.1:4173/
 
 ## Como indicar acasalamentos
 
-1. Entre em `Rebanho` e marque touros e vacas clicando na linha ou nas caixas da primeira coluna. O botao `Selecionar candidatos` faz uma selecao inicial por indice.
+1. Entre em `Rebanho` e marque touros e vacas clicando na linha ou nas caixas da primeira coluna. Use `Marcar todos` se quiser começar com todos os animais ativos selecionados e depois desmarcar os que não serão usados.
 2. Entre em `Acasalamentos`.
 3. A tela mostra duas tabelas com os touros e vacas selecionados, incluindo ID, DEP para peso ao ano, acuracia, fenotipo PA e genotipo letal.
 4. Use o assistente sequencial para escolher um touro e marcar as vacas que serao designadas a ele. Vacas ja designadas saem da lista dos proximos touros.
