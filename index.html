@@ -1552,14 +1552,19 @@
         return;
       }
       const calves = [];
-      let dead = 0, dystocia = 0;
+      let dead = 0, dystocia = 0, skippedPairs = 0;
+      const offspringBySire = {};
       const pairCount = state.pairs.length;
       state.pairs.forEach(p => {
         const sire = findAnimal(p.sireId), dam = findAnimal(p.damId);
-        if (!sire || !dam || !sire.active || !dam.active) return;
+        if (!sire || !dam || !sire.active || !dam.active) {
+          skippedPairs += 1;
+          return;
+        }
         sire.calves += 1;
         dam.calves += 1;
         const calf = makeAnimal({ sex: Math.random() < .5 ? "M" : "F", sire, dam, gen: state.year + 1 });
+        offspringBySire[sire.id] = (offspringBySire[sire.id] || 0) + 1;
         if (Math.random() < dystociaRisk(sire, dam)) {
           dystocia += 1;
           calf.pheno.ww -= 12;
@@ -1572,27 +1577,34 @@
       calves.forEach(c => { if (!c.dead) c.age = 0; state.animals.push(c); });
       state.year += 1;
       state.pairs = [];
-      cullToCapacity();
+      const cullReport = cullToCapacity(state.year);
       activeAnimals().forEach(updateEvaluation);
       recordHistory();
-      addEvent(`${calves.length} bezerros gerados; ${dead} removidos por genótipo letal aa; ${dystocia} sofreram penalidade de distocia.`);
+      const liveCalves = calves.filter(c => !c.dead).length;
+      const sireReport = Object.entries(offspringBySire).map(([id, count]) => `${id}: ${count}`).join("; ");
+      addEvent(`${pairCount - skippedPairs} pares válidos geraram ${calves.length} bezerros; ${liveCalves} nasceram vivos; ${dead} removidos por genótipo letal aa; ${dystocia} sofreram penalidade de distocia. Filhos por touro: ${sireReport || "nenhum"}.`);
+      if (cullReport.count) {
+        addEvent(`Descarte por capacidade: ${cullReport.count} animais vendidos por ${money(cullReport.revenue)}. A safra recém-nascida foi preservada sempre que havia adultos suficientes para descarte.`);
+      }
       giveFeedback(dead, dystocia, pairCount);
       render();
     }
 
-    function cullToCapacity() {
+    function cullToCapacity(currentGeneration) {
       const capacity = 65;
       const herd = activeAnimals();
-      if (herd.length <= capacity) return;
+      if (herd.length <= capacity) return { count: 0, revenue: 0 };
       const excess = herd.length - capacity;
-      const culls = herd.sort((a, b) => a.index - b.index).slice(0, excess);
+      const adultCandidates = herd.filter(a => a.gen !== currentGeneration).sort((a, b) => a.index - b.index);
+      const calfCandidates = herd.filter(a => a.gen === currentGeneration).sort((a, b) => a.index - b.index);
+      const culls = [...adultCandidates, ...calfCandidates].slice(0, excess);
       let revenue = 0;
       culls.forEach(a => {
         a.active = false;
         revenue += Math.max(500, 1000 + a.index * 5);
       });
       state.cash += revenue;
-      addEvent(`Descarte automático por capacidade: ${excess} animais vendidos por ${money(revenue)}.`);
+      return { count: culls.length, revenue };
     }
 
     function giveFeedback(dead, dystocia, pairCount) {
