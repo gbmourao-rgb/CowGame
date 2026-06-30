@@ -34,6 +34,17 @@ http://127.0.0.1:4173/
 
 Use `Limpar selecao` para refazer a escolha de reprodutores e `Limpar pares` para refazer apenas a lista de acasalamentos.
 
+## Limite de 65 animais para reproducao
+
+O simulador nao descarta animais automaticamente.
+
+Depois da safra, o rebanho ativo pode ficar acima de 65 animais. Isso e permitido para que o aluno tenha oportunidade de avaliar e descartar manualmente. A trava acontece somente antes da proxima reproducao:
+
+- se houver mais de 65 animais ativos, `Gerar proxima safra` fica bloqueado;
+- o aluno deve vender/descartar manualmente ate deixar no maximo 65 animais ativos;
+- o limite de 65 considera touros + vacas ativos;
+- bezerros vivos nao sao removidos automaticamente por capacidade.
+
 ## Como exportar resultados
 
 Use os botoes no topo da interface:

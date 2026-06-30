@@ -495,7 +495,7 @@
             <div class="metric"><strong id="yearMetric">0/10</strong><span>Ano do projeto</span></div>
             <div class="metric"><strong id="cashMetric">$0</strong><span>Caixa</span></div>
             <div class="metric"><strong id="scoreMetric">0</strong><span>Pontuação parcial</span></div>
-            <div class="metric"><strong id="herdMetric">0</strong><span>Animais ativos</span></div>
+            <div class="metric"><strong id="herdMetric">0/65</strong><span>Ativos / limite reprodução</span></div>
           </div>
         </div>
         <div class="panel">
@@ -678,6 +678,7 @@
       yhh: { label: "AA", full: "Altura de quadril", base: 122, sdG: 4.5, sdE: 4.2, goal: "medio" },
       marb: { label: "MAR", full: "Marmoreio", base: 4.5, sdG: .55, sdE: .7, goal: "alto" }
     };
+    const REPRO_CAPACITY = 65;
     const traitKeys = Object.keys(traits);
     const geneticCorr = [
       [1, .42, .45, .22, -.08],
@@ -1039,10 +1040,11 @@
     }
 
     function renderShell() {
+      const activeCount = activeAnimals().length;
       document.getElementById("yearMetric").textContent = `${state.year}/10`;
       document.getElementById("cashMetric").textContent = money(state.cash);
       document.getElementById("scoreMetric").textContent = Math.round(score());
-      document.getElementById("herdMetric").textContent = activeAnimals().length;
+      document.getElementById("herdMetric").textContent = `${activeCount}/${REPRO_CAPACITY}`;
       renderSelectionSummaries();
     }
 
@@ -1050,10 +1052,12 @@
       const sires = selectedBySex("M");
       const dams = selectedBySex("F");
       const text = `${sires.length} touro(s) e ${dams.length} vaca(s) selecionados para reprodução.`;
+      const activeCount = activeAnimals().length;
+      const capacityText = activeCount > REPRO_CAPACITY ? ` O rebanho ativo está com ${activeCount}/${REPRO_CAPACITY}; descarte/venda ${activeCount - REPRO_CAPACITY} animal(is) antes da próxima reprodução.` : ` Rebanho dentro do limite de reprodução: ${activeCount}/${REPRO_CAPACITY}.`;
       const herdSummary = document.getElementById("selectionSummary");
       const matingSummary = document.getElementById("matingSelectionSummary");
-      if (herdSummary) herdSummary.textContent = state.selected.size ? `${text} Clique em uma caixa marcada para desselecionar, ou use Limpar seleção.` : "Nenhum animal selecionado.";
-      if (matingSummary) matingSummary.textContent = state.selected.size ? text : "Nenhum animal selecionado para reprodução. Volte ao Rebanho e marque manualmente machos e fêmeas, ou use Marcar todos para começar de uma seleção completa.";
+      if (herdSummary) herdSummary.textContent = state.selected.size ? `${text} Clique em uma caixa marcada para desselecionar, ou use Limpar seleção.${capacityText}` : `Nenhum animal selecionado.${capacityText}`;
+      if (matingSummary) matingSummary.textContent = state.selected.size ? `${text}${capacityText}` : `Nenhum animal selecionado para reprodução. Volte ao Rebanho e marque manualmente machos e fêmeas, ou use Marcar todos para começar de uma seleção completa.${capacityText}`;
     }
 
     function score() {
@@ -1153,9 +1157,10 @@
       const assigned = assignedDamIds().size;
       const remaining = Math.max(0, totalDams - assigned);
       const pct = totalDams ? assigned / totalDams * 100 : 0;
+      const overCapacity = activeAnimals().length > REPRO_CAPACITY;
       document.getElementById("matingProgressText").textContent = `Vacas designadas: ${assigned}/${totalDams} | Restantes: ${remaining}`;
       document.getElementById("matingProgressBar").style.width = `${pct}%`;
-      document.getElementById("simulateBtn").disabled = totalDams > 0 && remaining > 0;
+      document.getElementById("simulateBtn").disabled = overCapacity || (totalDams > 0 && remaining > 0);
     }
 
     function renderSireSteps(sires) {
@@ -1542,6 +1547,12 @@
         render();
         return;
       }
+      const activeCount = activeAnimals().length;
+      if (activeCount > REPRO_CAPACITY) {
+        addFeedback(`Reprodução bloqueada: há ${activeCount} animais ativos. Venda/descarte manualmente ${activeCount - REPRO_CAPACITY} animal(is) para ficar no limite de ${REPRO_CAPACITY} touros + vacas antes de acasalar.`);
+        render();
+        return;
+      }
       const selectedDams = selectedBySex("F");
       const missingDams = selectedDams.filter(dam => !assignedDamIds().has(dam.id));
       if (selectedDams.length && missingDams.length) {
@@ -1575,34 +1586,17 @@
       calves.forEach(c => { if (!c.dead) c.age = 0; state.animals.push(c); });
       state.year += 1;
       state.pairs = [];
-      const cullReport = cullToCapacity(state.year);
       activeAnimals().forEach(updateEvaluation);
       recordHistory();
       const liveCalves = calves.filter(c => !c.dead).length;
       const sireReport = Object.entries(offspringBySire).map(([id, count]) => `${id}: ${count}`).join("; ");
       addEvent(`${pairCount - skippedPairs} pares válidos geraram ${calves.length} bezerros; ${liveCalves} nasceram vivos; ${dead} removidos por genótipo letal aa; ${dystocia} sofreram penalidade de distocia. Filhos por touro: ${sireReport || "nenhum"}.`);
-      if (cullReport.count) {
-        addEvent(`Descarte por capacidade: ${cullReport.count} animais vendidos por ${money(cullReport.revenue)}. A safra recém-nascida foi preservada sempre que havia adultos suficientes para descarte.`);
+      const afterBirthCount = activeAnimals().length;
+      if (afterBirthCount > REPRO_CAPACITY) {
+        addEvent(`Rebanho acima do limite para próxima reprodução: ${afterBirthCount}/${REPRO_CAPACITY}. Nenhum animal foi descartado automaticamente; faça venda/descarte manual antes da próxima safra.`);
       }
       giveFeedback(dead, dystocia, pairCount);
       render();
-    }
-
-    function cullToCapacity(currentGeneration) {
-      const capacity = 65;
-      const herd = activeAnimals();
-      if (herd.length <= capacity) return { count: 0, revenue: 0 };
-      const excess = herd.length - capacity;
-      const adultCandidates = herd.filter(a => a.gen !== currentGeneration).sort((a, b) => a.index - b.index);
-      const calfCandidates = herd.filter(a => a.gen === currentGeneration).sort((a, b) => a.index - b.index);
-      const culls = [...adultCandidates, ...calfCandidates].slice(0, excess);
-      let revenue = 0;
-      culls.forEach(a => {
-        a.active = false;
-        revenue += Math.max(500, 1000 + a.index * 5);
-      });
-      state.cash += revenue;
-      return { count: culls.length, revenue };
     }
 
     function giveFeedback(dead, dystocia, pairCount) {
@@ -1614,6 +1608,7 @@
       if (dead > 0) addFeedback("Apareceram bezerros aa. Evite cruzar portadores quando o modo professor revelar genótipos.");
       if (activeBySex("M").length < 2) addFeedback("Há poucos touros ativos. Isso aumenta risco de gargalo genético.");
       if (state.cash < 0) addFeedback("Caixa negativo. A estratégia genética precisa caber no orçamento.");
+      if (activeAnimals().length > REPRO_CAPACITY) addFeedback(`Antes da próxima reprodução, reduza manualmente o rebanho para ${REPRO_CAPACITY} animais ativos. O simulador não descarta automaticamente.`);
     }
 
     document.querySelectorAll("[data-view]").forEach(btn => btn.addEventListener("click", e => {
