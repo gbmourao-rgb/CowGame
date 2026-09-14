@@ -24,9 +24,9 @@ header h1{margin:0;font-size:clamp(25px,4vw,39px);line-height:1.12}header h2{mar
 .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 label.field{display:block;font-weight:700;color:var(--blue);margin:11px 0}input[type=text],input[type=email],textarea,select{display:block;width:100%;margin-top:6px;padding:11px 12px;border:1px solid #8fa5b2;border-radius:7px;background:#fff;color:var(--ink);font:inherit}
 textarea{min-height:92px;resize:vertical}.question{font-weight:700;color:var(--blue);margin:20px 0 8px}
-.options{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin:10px 0 16px}.option{display:flex;position:relative;width:fit-content;max-width:100%;gap:10px;align-items:flex-start;border:1px solid #aebfc9;border-radius:8px;padding:8px 12px;background:#fafcfd;cursor:pointer}
+.options{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin:10px 0 16px}.option{display:inline-grid;grid-template-columns:30px minmax(0,max-content);column-gap:10px;align-items:start;width:auto;max-width:100%;border:1px solid #aebfc9;border-radius:8px;padding:8px 12px;background:#fafcfd;cursor:pointer}
 .option:hover{border-color:var(--teal);background:#f1f7f8}.option input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}.letter{flex:0 0 29px;width:29px;height:29px;border-radius:6px;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:800}
-.option>span:last-child{padding:2px 2px 0 0}.option:has(input:checked){border:2px solid var(--gold);background:#fff9e9}.option:has(input:checked) .letter{background:var(--gold);color:var(--blue)}
+.option>span:last-child{display:block;min-width:0;max-width:760px;padding:2px 2px 0 0;white-space:normal;word-break:normal;overflow-wrap:normal}.option:has(input:checked){border:2px solid var(--gold);background:#fff9e9}.option:has(input:checked) .letter{background:var(--gold);color:var(--blue)}
 .buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}button{border:0;border-radius:7px;padding:10px 16px;font:700 15px Arial;cursor:pointer}
 .primary{background:var(--blue);color:#fff}.secondary{background:var(--teal);color:#fff}.success{background:var(--ok);color:#fff}.ghost{background:#e7eef2;color:var(--blue)}button:disabled{opacity:.45;cursor:not-allowed}
 .feedback{display:none;margin:14px 0;padding:13px 15px;border-radius:8px;color:#fff;font-weight:600}.feedback.show{display:block}.feedback.ok{background:var(--ok);border-left:8px solid var(--gold)}.feedback.warn{background:var(--warn);border-left:8px solid var(--gold)}.feedback.bad{background:var(--bad);border-left:8px solid #f0aaa4}.feedback.info{background:var(--blue);border-left:8px solid var(--teal)}
@@ -85,9 +85,9 @@ footer{background:var(--blue);color:#fff;text-align:center;padding:16px;font-siz
 <div class="kicker">Etapa 2</div><h2>Antecipar o problema e visualizar os dados</h2>
 <div class="question">Se as 96 aves forem tratadas como repetições independentes, o que tende a acontecer com o erro-padrão das diferenças entre dietas?</div>
 <div class="options">
-<label class="option"><input type="radio" name="prediction" value="menor"><span class="letter">A</span><span>O erro-padrão tende a ficar menor do que deveria.</span></label>
-<label class="option"><input type="radio" name="prediction" value="maior"><span class="letter">B</span><span>O erro-padrão tende a ficar maior do que deveria.</span></label>
-<label class="option"><input type="radio" name="prediction" value="igual"><span class="letter">C</span><span>O erro-padrão não é afetado pela estrutura das baias.</span></label>
+<label class="option"><input type="radio" hidden style="display:none" name="prediction" value="menor"><span class="letter">A</span><span>O erro-padrão tende a ficar menor do que deveria.</span></label>
+<label class="option"><input type="radio" hidden style="display:none" name="prediction" value="maior"><span class="letter">B</span><span>O erro-padrão tende a ficar maior do que deveria.</span></label>
+<label class="option"><input type="radio" hidden style="display:none" name="prediction" value="igual"><span class="letter">C</span><span>O erro-padrão não é afetado pela estrutura das baias.</span></label>
 </div>
 <label class="field">Justifique sua previsão<textarea id="predictionReason" placeholder="Escreva duas ou três linhas antes de verificar."></textarea></label>
 <div class="buttons"><button class="secondary" onclick="checkPrediction()">Verificar previsão</button><button class="primary" onclick="showDataChart()">Construir gráficos</button><button class="success" id="next2" disabled onclick="go(3)">Continuar</button><button class="ghost" onclick="go(1)">Voltar</button></div>
@@ -101,10 +101,10 @@ footer{background:var(--blue);color:#fff;text-align:center;padding:16px;font-siz
 <div class="buttons"><button class="primary" onclick="runNaive()">Ajustar modelo linear</button></div><div id="naiveOut" class="output"></div>
 <div class="question">Qual pressuposto é mais diretamente incompatível com o desenho do experimento?</div>
 <div class="options">
-<label class="option"><input type="radio" name="indep" value="normal"><span class="letter">A</span><span>A normalidade da variável dieta.</span></label>
-<label class="option"><input type="radio" name="indep" value="within"><span class="letter">B</span><span>A independência entre aves da mesma baia.</span></label>
-<label class="option"><input type="radio" name="indep" value="means"><span class="letter">C</span><span>A existência de três médias de dieta.</span></label>
-<label class="option"><input type="radio" name="indep" value="grams"><span class="letter">D</span><span>A unidade de medida expressa em gramas.</span></label>
+<label class="option"><input type="radio" hidden style="display:none" name="indep" value="normal"><span class="letter">A</span><span>A normalidade da variável dieta.</span></label>
+<label class="option"><input type="radio" hidden style="display:none" name="indep" value="within"><span class="letter">B</span><span>A independência entre aves da mesma baia.</span></label>
+<label class="option"><input type="radio" hidden style="display:none" name="indep" value="means"><span class="letter">C</span><span>A existência de três médias de dieta.</span></label>
+<label class="option"><input type="radio" hidden style="display:none" name="indep" value="grams"><span class="letter">D</span><span>A unidade de medida expressa em gramas.</span></label>
 </div>
 <div class="buttons"><button class="secondary" onclick="checkIndependence()">Verificar interpretação</button><button class="ghost" onclick="go(2)">Voltar</button></div><div id="fb3" class="feedback"></div>
 </section>
@@ -116,9 +116,9 @@ footer{background:var(--blue);color:#fff;text-align:center;padding:16px;font-siz
 <div class="buttons"><button class="primary" onclick="runModels()">Comparar os modelos</button></div><div id="modelsOut" class="output"></div>
 <div class="question">Qual análise representa conjuntamente a comparação entre dietas, a variação entre baias e as medidas individuais?</div>
 <div class="options">
-<label class="option"><input type="radio" name="model" value="naive"><span class="letter">A</span><span>Modelo linear que trata as 96 aves como independentes.</span></label>
-<label class="option"><input type="radio" name="model" value="means"><span class="letter">B</span><span>Modelo linear ajustado às 12 médias das baias.</span></label>
-<label class="option"><input type="radio" name="model" value="mixed"><span class="letter">C</span><span>Modelo misto com dieta fixa e baia aleatória.</span></label>
+<label class="option"><input type="radio" hidden style="display:none" name="model" value="naive"><span class="letter">A</span><span>Modelo linear que trata as 96 aves como independentes.</span></label>
+<label class="option"><input type="radio" hidden style="display:none" name="model" value="means"><span class="letter">B</span><span>Modelo linear ajustado às 12 médias das baias.</span></label>
+<label class="option"><input type="radio" hidden style="display:none" name="model" value="mixed"><span class="letter">C</span><span>Modelo misto com dieta fixa e baia aleatória.</span></label>
 </div>
 <div class="buttons"><button class="secondary" onclick="checkModel()">Verificar escolha</button><button class="ghost" onclick="go(3)">Voltar</button></div><div id="fb4" class="feedback"></div>
 </section>
@@ -128,10 +128,10 @@ footer{background:var(--blue);color:#fff;text-align:center;padding:16px;font-siz
 <div class="kicker">Etapa 5</div><h2>Escrever e interpretar o modelo</h2>
 <div class="question">Qual formulação representa adequadamente o experimento?</div>
 <div class="options formula">
-<label class="option"><input type="radio" name="formula" value="correct"><span class="letter">A</span><span>yᵢⱼₖ = μ + dietaᵢ + baiaⱼ(ᵢ) + εᵢⱼₖ</span></label>
-<label class="option"><input type="radio" name="formula" value="bird"><span class="letter">B</span><span>yᵢⱼₖ = μ + dietaᵢ + aveₖ + εᵢⱼₖ</span></label>
-<label class="option"><input type="radio" name="formula" value="nodiet"><span class="letter">C</span><span>yᵢⱼₖ = μ + baiaⱼ + εᵢⱼₖ</span></label>
-<label class="option"><input type="radio" name="formula" value="naive"><span class="letter">D</span><span>yᵢⱼₖ = μ + dietaᵢ + εᵢⱼₖ</span></label>
+<label class="option"><input type="radio" hidden style="display:none" name="formula" value="correct"><span class="letter">A</span><span>yᵢⱼₖ = μ + dietaᵢ + baiaⱼ(ᵢ) + εᵢⱼₖ</span></label>
+<label class="option"><input type="radio" hidden style="display:none" name="formula" value="bird"><span class="letter">B</span><span>yᵢⱼₖ = μ + dietaᵢ + aveₖ + εᵢⱼₖ</span></label>
+<label class="option"><input type="radio" hidden style="display:none" name="formula" value="nodiet"><span class="letter">C</span><span>yᵢⱼₖ = μ + baiaⱼ + εᵢⱼₖ</span></label>
+<label class="option"><input type="radio" hidden style="display:none" name="formula" value="naive"><span class="letter">D</span><span>yᵢⱼₖ = μ + dietaᵢ + εᵢⱼₖ</span></label>
 </div>
 <div class="buttons"><button class="secondary" onclick="checkFormula()">Verificar modelo</button><button class="ghost" onclick="go(4)">Voltar</button></div><div id="fb5" class="feedback"></div>
 </section>
